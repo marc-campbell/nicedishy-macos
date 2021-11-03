@@ -1,0 +1,60 @@
+{
+  "name": "NiceDishy",
+  "version": "0.0.1",
+  "license": "Apache License, Version 2.0",
+  "authors": {
+    "gRPC contributors": "grpc-io@googlegroups.com"
+  },
+  "homepage": "https://grpc.io/",
+  "summary": "NiceDishy GRPC",
+  "source": {
+    "git": "https://github.com/grpc/grpc.git"
+  },
+  "platforms": {
+    "ios": "9.0",
+    "osx": "10.10"
+  },
+  "dependencies": {
+    "!ProtoCompiler-gRPCPlugin": [
+      "~> 1.0"
+    ]
+  },
+  "prepare_command": "mkdir -p Pods/NiceDishy\nPods/!ProtoCompiler/protoc         --plugin=protoc-gen-grpc=Pods/!ProtoCompiler-gRPCPlugin/grpc_objective_c_plugin         --descriptor_set_in=./protos/dish.protoset         --objc_out=Pods/NiceDishy         --grpc_out=Pods/NiceDishy         -I ./protos         -I Pods/!ProtoCompiler         spacex/api/device/device.proto         spacex/api/common/status/status.proto         spacex/api/device/command.proto         spacex/api/device/common.proto         spacex/api/device/dish.proto         spacex/api/device/wifi.proto         spacex/api/device/wifi_config.proto         spacex/api/device/transceiver.proto",
+  "pod_target_xcconfig": {
+    "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS=1",
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES": "YES"
+  },
+  "subspecs": [
+    {
+      "name": "Messages",
+      "source_files": [
+        "Pods/NiceDishy/*.pbobjc.{h,m}",
+        "Pods/NiceDishy/**/*.pbobjc.{h,m}"
+      ],
+      "header_mappings_dir": "Pods/NiceDishy",
+      "requires_arc": false,
+      "dependencies": {
+        "Protobuf": [
+
+        ]
+      }
+    },
+    {
+      "name": "Services",
+      "source_files": [
+        "Pods/NiceDishy/*.pbrpc.{h,m}",
+        "Pods/NiceDishy/**/*.pbrpc.{h,m}"
+      ],
+      "header_mappings_dir": "Pods/NiceDishy",
+      "requires_arc": true,
+      "dependencies": {
+        "gRPC-ProtoRPC": [
+
+        ],
+        "NiceDishy/Messages": [
+
+        ]
+      }
+    }
+  ]
+}
