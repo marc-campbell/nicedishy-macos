@@ -1,0 +1,16 @@
+### OSX ###
+.DS_Store
+
+### Xcode ###
+# User settings
+xcuserdata/
+
+# Patch
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+### CocoaPods ###
+Pods/

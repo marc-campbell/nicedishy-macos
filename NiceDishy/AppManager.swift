@@ -153,7 +153,6 @@ class AppManager {
         isBusy = true
         
         let options = GRPCMutableCallOptions()
-        options.transport = GRPCDefaultTransportImplList.core_insecure
         device = Device.service(withHost: "192.168.100.1:9200", callOptions: options)
         
         let request = Request()
