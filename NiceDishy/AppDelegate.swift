@@ -24,6 +24,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
 
-
+    func application(_ application: NSApplication, open urls: [URL]) {
+        guard let url = urls.first, let host = url.host, host == "connected" else {
+            return
+        }
+        
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+              let queryItems = components.queryItems else {
+            return
+        }
+        
+        guard let token = queryItems.first(where: { $0.name == "token" }),
+              let value = token.value else {
+            return
+        }
+        
+        ApiManager.shared.dishyToken = value
+        AppManager.shared.setupStatusBar()
+    }
 }
 

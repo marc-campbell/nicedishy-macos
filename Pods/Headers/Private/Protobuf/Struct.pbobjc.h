@@ -1,2 +1,1 @@
-// Moved to root of objectivec directory, shim to keep anyone's imports working.
-#import "GPBStruct.pbobjc.h"
+../../../Protobuf/objectivec/google/protobuf/Struct.pbobjc.h

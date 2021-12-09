@@ -1,2 +1,1 @@
-// Moved to root of objectivec directory, shim to keep anyone's imports working.
-#import "GPBDuration.pbobjc.h"
+../../../Protobuf/objectivec/google/protobuf/Duration.pbobjc.h

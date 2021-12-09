@@ -7,15 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D1DEF8C2761C557008ED516 /* ApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1DEF8B2761C557008ED516 /* ApiManager.swift */; };
 		2D65A4A027193EEC00811FDC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65A49F27193EEC00811FDC /* AppDelegate.swift */; };
 		2D65A4A227193F0B00811FDC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D65A4A127193F0B00811FDC /* Assets.xcassets */; };
 		2D65A4A527193F0B00811FDC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2D65A4A327193F0B00811FDC /* MainMenu.xib */; };
 		2DCDF2A1272C4A3900C49D40 /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCDF2A0272C4A3900C49D40 /* AppManager.swift */; };
-		83AAD4DA70E8BB28AAE8951B /* libPods-NiceDishy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139AF31E0FA78AF3CBF06FF7 /* libPods-NiceDishy.a */; };
+		B37742274D66D1E7D2420F20 /* libPods-NiceDishy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A00C0447D2507E9F95C5E1D /* libPods-NiceDishy.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		139AF31E0FA78AF3CBF06FF7 /* libPods-NiceDishy.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NiceDishy.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A00C0447D2507E9F95C5E1D /* libPods-NiceDishy.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NiceDishy.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D1DEF8B2761C557008ED516 /* ApiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiManager.swift; sourceTree = "<group>"; };
 		2D65A49C27193EEC00811FDC /* NiceDishy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NiceDishy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D65A49F27193EEC00811FDC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2D65A4A127193F0B00811FDC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -33,7 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83AAD4DA70E8BB28AAE8951B /* libPods-NiceDishy.a in Frameworks */,
+				B37742274D66D1E7D2420F20 /* libPods-NiceDishy.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,6 +69,7 @@
 				2D65A4A627193F0B00811FDC /* Info.plist */,
 				2D65A4A727193F0B00811FDC /* NiceDishy.entitlements */,
 				2DCDF2A0272C4A3900C49D40 /* AppManager.swift */,
+				2D1DEF8B2761C557008ED516 /* ApiManager.swift */,
 				2DBD4E982730E61F0060153A /* NiceDishy-Bridging-Header.h */,
 			);
 			path = NiceDishy;
@@ -84,7 +87,7 @@
 		E00872137D772FD739E6B8AA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				139AF31E0FA78AF3CBF06FF7 /* libPods-NiceDishy.a */,
+				1A00C0447D2507E9F95C5E1D /* libPods-NiceDishy.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -100,7 +103,7 @@
 				2D65A49827193EEC00811FDC /* Sources */,
 				2D65A49927193EEC00811FDC /* Frameworks */,
 				2D65A49A27193EEC00811FDC /* Resources */,
-				63EAFDC717A0FF70BD32D5E6 /* [CP] Copy Pods Resources */,
+				71D41444463EB526CD5CD919 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -157,7 +160,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		63EAFDC717A0FF70BD32D5E6 /* [CP] Copy Pods Resources */ = {
+		71D41444463EB526CD5CD919 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -204,6 +207,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2D65A4A027193EEC00811FDC /* AppDelegate.swift in Sources */,
+				2D1DEF8C2761C557008ED516 /* ApiManager.swift in Sources */,
 				2DCDF2A1272C4A3900C49D40 /* AppManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -347,7 +351,7 @@
 				CODE_SIGN_ENTITLEMENTS = NiceDishy/NiceDishy.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = SVB2S5YXF4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = NiceDishy/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -372,7 +376,7 @@
 				CODE_SIGN_ENTITLEMENTS = NiceDishy/NiceDishy.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = SVB2S5YXF4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = NiceDishy/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

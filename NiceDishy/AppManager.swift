@@ -11,7 +11,6 @@ class AppManager {
     static let shared = AppManager()
     
     let appStatusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-    var isLogin = false
     
     func setupStatusBar() {
         appStatusItem.button?.title = ""
@@ -19,17 +18,25 @@ class AppManager {
         
         appStatusItem.menu = createMenu()
     }
+
+    var isLoggedIn: Bool {
+        (ApiManager.shared.dishyToken != nil)
+    }
     
     func createMenu() -> NSMenu {
         let menu = NSMenu()
-        if !isLogin {
-            let loginItem = NSMenuItem(title: "Login", action: #selector(onLogin), keyEquivalent: "")
+        if !isLoggedIn {
+            let loginItem = NSMenuItem(title: "Connect Dishy", action: #selector(onLogin), keyEquivalent: "")
             loginItem.target = self
             menu.addItem(loginItem)
             let quitItem = NSMenuItem(title: "Quit", action: #selector(onQuit), keyEquivalent: "")
             quitItem.target = self
             menu.addItem(quitItem)
         } else {
+            let loginItem = NSMenuItem(title: "Disconnect Dishy", action: #selector(onLogin), keyEquivalent: "")
+            loginItem.target = self
+            menu.addItem(loginItem)
+            menu.addItem(NSMenuItem.separator())
             let pingItem = NSMenuItem(title: "Get Ping", action: #selector(onGetPing), keyEquivalent: "")
             pingItem.target = self
             menu.addItem(pingItem)
@@ -65,9 +72,15 @@ class AppManager {
     
     //MARK: - Events
     @objc func onLogin() {
-        isLogin = true
-        
-        setupStatusBar()
+        if !isLoggedIn {
+            let url = URL(string: ApiManager.CONNECT_DISHY_URL)!
+            if NSWorkspace.shared.open(url) {
+                print("Open \(ApiManager.CONNECT_DISHY_URL)")
+            }
+        } else {
+            ApiManager.shared.dishyToken = nil
+            setupStatusBar()
+        }
     }
     
     @objc func onQuit() {
@@ -153,6 +166,7 @@ class AppManager {
         isBusy = true
         
         let options = GRPCMutableCallOptions()
+        options.transport = GRPCDefaultTransportImplList.core_insecure
         device = Device.service(withHost: "192.168.100.1:9200", callOptions: options)
         
         let request = Request()
