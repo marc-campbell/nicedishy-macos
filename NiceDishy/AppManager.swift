@@ -37,16 +37,9 @@ class AppManager {
             loginItem.target = self
             menu.addItem(loginItem)
             menu.addItem(NSMenuItem.separator())
-            let pingItem = NSMenuItem(title: "Get Ping", action: #selector(onGetPing), keyEquivalent: "")
-            pingItem.target = self
-            menu.addItem(pingItem)
             let statusItem = NSMenuItem(title: "Get Status", action: #selector(onGetStatus), keyEquivalent: "")
             statusItem.target = self
             menu.addItem(statusItem)
-            let speedTestItem = NSMenuItem(title: "Get SpeedTest", action: #selector(onGetSpeedTest), keyEquivalent: "")
-            speedTestItem.target = self
-            menu.addItem(speedTestItem)
-            menu.addItem(NSMenuItem.separator())
             let quitItem = NSMenuItem(title: "Quit", action: #selector(onQuit), keyEquivalent: "")
             quitItem.target = self
             menu.addItem(quitItem)
@@ -90,31 +83,6 @@ class AppManager {
     var device: Device?
     var isBusy = false
     
-    @objc func onGetPing() {
-        if isBusy {
-            print("Busy. Try later!")
-        }
-        isBusy = true
-        
-        let options = GRPCMutableCallOptions()
-        options.transport = GRPCDefaultTransportImplList.core_insecure
-        device = Device.service(withHost: "192.168.100.1:9200", callOptions: options)
-        
-        let request = Request()
-        request.getPing = GetPingRequest()
-        
-        let handler = GRPCUnaryResponseHandler<Response>(responseHandler: { [unowned self] (response, error) in
-            if error != nil {
-                print(error)
-            }
-            if response != nil {
-                print(response)
-            }
-            isBusy = false
-        }, responseDispatchQueue: nil)
-        device?.handle(withMessage: request, responseHandler: handler!, callOptions: nil).start()
-    }
-    
     @objc func onGetStatus() {
         if isBusy {
             print("Busy. Try later!")
@@ -145,7 +113,15 @@ class AppManager {
             var payload : [String:Any] = [String:Any]()
             payload["deviceInfo"] = deviceInfo
             payload["deviceState"] = deviceState
-            payload["state"] = response.dishGetStatus.deviceState
+
+            payload["state"] = "??"
+            payload["snr"] = 0;
+            payload["downlinkThroughputBps"] = response.dishGetStatus.downlinkThroughputBps
+            payload["uplinkThroughputBps"] = response.dishGetStatus.uplinkThroughputBps
+            payload["popPingLatencyMs"] = response.dishGetStatus.popPingLatencyMs
+            payload["popPingDropRate"] = response.dishGetStatus.popPingDropRate
+            payload["percentObstructed"] = 0
+            payload["secondsObstructed"] = 0;
             
             do {
                 let jsonData = try JSONSerialization.data(withJSONObject: payload, options: [])
@@ -157,32 +133,5 @@ class AppManager {
             }
         }, responseDispatchQueue: nil)
         device?.handle(withMessage: request, responseHandler: handler!, callOptions: nil).start()
-    }
-    
-    @objc func onGetSpeedTest() {
-        if isBusy {
-            print("Busy. Try later!")
-        }
-        isBusy = true
-        
-        let options = GRPCMutableCallOptions()
-        options.transport = GRPCDefaultTransportImplList.core_insecure
-        device = Device.service(withHost: "192.168.100.1:9200", callOptions: options)
-        
-        let request = Request()
-        request.speedTest = SpeedTestRequest()
-        device?.handle(with: request, handler: { [unowned self] (response, error) in
-            if let err = error {
-                print("SpeedTest Error: ")
-                print(err)
-            } else if let res = response {
-                print("SpeedTest Success: ")
-                print("\(res.responseOneOfCase)")
-            } else {
-                print("SpeedTest: no return data")
-            }
-            
-            isBusy = false
-        })
     }
 }

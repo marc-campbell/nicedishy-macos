@@ -14,3 +14,5 @@ xcuserdata/
 
 ### CocoaPods ###
 Pods/
+Podfile.lock
+Pods/Manifest.lock
