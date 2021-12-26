@@ -12,7 +12,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBOutlet var window: NSWindow!
 
-
+    let dishyService = DishyService()
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
         
@@ -22,6 +23,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         AppManager.shared.setupStatusBar()
         AppManager.shared.showIconOnDock(false)
+        
+        Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(self.pollInterval), userInfo: nil, repeats: true)
+    }
+    
+    @objc func pollInterval() {
+        // if logged in, get and send data
+        if (ApiManager.shared.dishyToken == "") {
+            return
+        }
+        
+        dishyService.getData()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
