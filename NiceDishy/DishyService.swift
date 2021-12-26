@@ -30,7 +30,11 @@ class DishyService {
                 print(error)
                 return
             }
-
+            
+            let now = Date();
+            var formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+            
             var deviceInfo : [String:Any] = [String:Any]()
             deviceInfo["hardwareVersion"] = response.dishGetStatus.deviceInfo.hardwareVersion!
             deviceInfo["softwareVersion"] = response.dishGetStatus.deviceInfo.softwareVersion!
@@ -38,24 +42,29 @@ class DishyService {
             var deviceState : [String:Any] = [String:Any]()
             deviceState["uptimeSeconds"] = response.dishGetStatus.deviceState.uptimeS
             
-            var payload : [String:Any] = [String:Any]()
-            payload["deviceInfo"] = deviceInfo
-            payload["deviceState"] = deviceState
+            var status : [String:Any] = [String:Any]()
 
-            payload["state"] = "??"
-            payload["snr"] = 0;
-            payload["downlinkThroughputBps"] = response.dishGetStatus.downlinkThroughputBps
-            payload["uplinkThroughputBps"] = response.dishGetStatus.uplinkThroughputBps
-            payload["popPingLatencyMs"] = response.dishGetStatus.popPingLatencyMs
-            payload["popPingDropRate"] = response.dishGetStatus.popPingDropRate
-            payload["percentObstructed"] = 0
-            payload["secondsObstructed"] = 0;
+            status["deviceInfo"] = deviceInfo
+            status["deviceState"] = deviceState
+            
+            status["state"] = "??"
+            status["snr"] = 0;
+            status["downlinkThroughputBps"] = response.dishGetStatus.downlinkThroughputBps
+            status["uplinkThroughputBps"] = response.dishGetStatus.uplinkThroughputBps
+            status["popPingLatencyMs"] = response.dishGetStatus.popPingLatencyMs
+            status["popPingDropRate"] = response.dishGetStatus.popPingDropRate
+            status["percentObstructed"] = 0
+            status["secondsObstructed"] = 0;
+            
+            var payload : [String:Any] = [String:Any]()
+            payload["when"] = formatter.string(from:now)
+            payload["status"] = status
+            
             
             do {
-                let jsonData = try JSONSerialization.data(withJSONObject: payload, options: [])
-                let jsonString = String(data: jsonData, encoding: String.Encoding.ascii)!
-            
-                print(jsonString)
+                ApiManager.shared.push(payload: payload) { pushResult in
+                    print("push complete")
+                }
             } catch {
                 print("JSON Serialization error: ", error)
             }

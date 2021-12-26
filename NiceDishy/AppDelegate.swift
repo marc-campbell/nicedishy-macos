@@ -11,12 +11,8 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBOutlet var window: NSWindow!
-
-    let dishyService = DishyService()
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // Insert code here to initialize your application
-        
         // look for an auth token in keychain
         let token = DAKeychain.shared["com.nicedishy.token"]
         ApiManager.shared.dishyToken = token;
@@ -24,16 +20,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         AppManager.shared.setupStatusBar()
         AppManager.shared.showIconOnDock(false)
         
+        // the timer is the main data collection method...
         Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(self.pollInterval), userInfo: nil, repeats: true)
     }
     
+    // pollInterval is called on an inteval and should handle collecting and sending data to the api
+    // this will be called even if not logged in
     @objc func pollInterval() {
         // if logged in, get and send data
-        if (ApiManager.shared.dishyToken == "") {
+        if (ApiManager.shared.dishyToken == nil) {
+            print("not logged in")
             return
         }
         
-        dishyService.getData()
+        AppManager.shared.dishyService.getData()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

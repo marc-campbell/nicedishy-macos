@@ -10,23 +10,28 @@ import Foundation
 class ApiManager {
     static let shared = ApiManager()
     
-    static let CONNECT_DISHY_URL = "https://nicedishy.com/connect_device"
-    static let PUSH_DATA_URL = "https://nicedishy.com/"
+    // production
+//    static let CONNECT_DISHY_URL = "https://nicedishy.com/connect_device"
+//    static let PUSH_DATA_URL = "https://nicedishy.com/"
+  
+    // local dev
+    static let CONNECT_DISHY_URL = "https://nicedishy-marccampbell.cloud.okteto.net/connect_device"
+    static let PUSH_DATA_URL = "https://nicedishy-api-marccampbell.cloud.okteto.net/api/v1/stats"
     
     var dishyToken: String?
     
-    func push(data: [String: Any], completionHandler: @escaping (Bool) -> Void) {
+    func push(payload: [String:Any], completionHandler: @escaping (Bool) -> Void) {
         guard let token = dishyToken, let url = URL(string: ApiManager.PUSH_DATA_URL) else {
             print("No token")
             completionHandler(false)
             return
         }
         
-        if let jsonData = try? JSONSerialization.data(withJSONObject: data, options: []) {
+        if let jsonData = try? JSONSerialization.data(withJSONObject: payload, options: []) {
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.httpBody = jsonData
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.setValue("Token \(token)", forHTTPHeaderField: "Authorization")
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
             // request.addValue("application/json", forHTTPHeaderField: "Accept")
             // request.addValue("\(jsonData.count)", forHTTPHeaderField: "Content-Length")
