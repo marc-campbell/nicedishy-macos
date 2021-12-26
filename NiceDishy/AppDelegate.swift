@@ -17,11 +17,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to initialize your application
         
         // look for an auth token in keychain
-        if let savedToken = KeyChain.load(key: "com.nicedishy.token") {
-            let token = savedToken.to(type: String.self)
-            ApiManager.shared.dishyToken = token
-        }
-                
+        let token = DAKeychain.shared["com.nicedishy.token"]
+        ApiManager.shared.dishyToken = token;
+        
         AppManager.shared.setupStatusBar()
         AppManager.shared.showIconOnDock(false)
     }
@@ -45,11 +43,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         
-        let data = Data(from: token.value)
-        let status = KeyChain.save(key: "com.nicedishy.token", data: data)
-        if status != 0 {
-            print("failed to write to keychain")
-        }
+        DAKeychain.shared["com.nicedishy.token"] = value;
         
         ApiManager.shared.dishyToken = value
         AppManager.shared.setupStatusBar()

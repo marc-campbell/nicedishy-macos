@@ -12,7 +12,7 @@
 		2D65A4A227193F0B00811FDC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D65A4A127193F0B00811FDC /* Assets.xcassets */; };
 		2D65A4A527193F0B00811FDC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2D65A4A327193F0B00811FDC /* MainMenu.xib */; };
 		2DCDF2A1272C4A3900C49D40 /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCDF2A0272C4A3900C49D40 /* AppManager.swift */; };
-		4904472D277580FA00860F1E /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4904472C277580FA00860F1E /* KeychainService.swift */; };
+		4904472D277580FA00860F1E /* DAKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4904472C277580FA00860F1E /* DAKeychain.swift */; };
 		B37742274D66D1E7D2420F20 /* libPods-NiceDishy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A00C0447D2507E9F95C5E1D /* libPods-NiceDishy.a */; };
 /* End PBXBuildFile section */
 
@@ -27,7 +27,7 @@
 		2D65A4A727193F0B00811FDC /* NiceDishy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NiceDishy.entitlements; sourceTree = "<group>"; };
 		2DBD4E982730E61F0060153A /* NiceDishy-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NiceDishy-Bridging-Header.h"; sourceTree = "<group>"; };
 		2DCDF2A0272C4A3900C49D40 /* AppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
-		4904472C277580FA00860F1E /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		4904472C277580FA00860F1E /* DAKeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAKeychain.swift; sourceTree = "<group>"; };
 		49293AA6380842305AB8D8C6 /* Pods-NiceDishy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NiceDishy.debug.xcconfig"; path = "Target Support Files/Pods-NiceDishy/Pods-NiceDishy.debug.xcconfig"; sourceTree = "<group>"; };
 		4BA859585EFEBF5D9D6246BA /* Pods-NiceDishy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NiceDishy.release.xcconfig"; path = "Target Support Files/Pods-NiceDishy/Pods-NiceDishy.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -73,7 +73,7 @@
 				2DCDF2A0272C4A3900C49D40 /* AppManager.swift */,
 				2D1DEF8B2761C557008ED516 /* ApiManager.swift */,
 				2DBD4E982730E61F0060153A /* NiceDishy-Bridging-Header.h */,
-				4904472C277580FA00860F1E /* KeychainService.swift */,
+				4904472C277580FA00860F1E /* DAKeychain.swift */,
 			);
 			path = NiceDishy;
 			sourceTree = "<group>";
@@ -210,7 +210,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2D65A4A027193EEC00811FDC /* AppDelegate.swift in Sources */,
-				4904472D277580FA00860F1E /* KeychainService.swift in Sources */,
+				4904472D277580FA00860F1E /* DAKeychain.swift in Sources */,
 				2D1DEF8C2761C557008ED516 /* ApiManager.swift in Sources */,
 				2DCDF2A1272C4A3900C49D40 /* AppManager.swift in Sources */,
 			);
@@ -355,7 +355,7 @@
 				CODE_SIGN_ENTITLEMENTS = NiceDishy/NiceDishy.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = SVB2S5YXF4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = NiceDishy/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -380,7 +380,7 @@
 				CODE_SIGN_ENTITLEMENTS = NiceDishy/NiceDishy.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = SVB2S5YXF4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = NiceDishy/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

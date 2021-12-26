@@ -72,6 +72,7 @@ class AppManager {
             }
         } else {
             ApiManager.shared.dishyToken = nil
+            DAKeychain.shared.delete(withKey: "com.nicedishy.token")
             setupStatusBar()
         }
     }
