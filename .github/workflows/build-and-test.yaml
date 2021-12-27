@@ -10,9 +10,12 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
+      - name: Install pods  
+        run: |
+          pod install
       - name: Find first scheme of default project
         run: |
-           echo "SCHEME=$(xcodebuild -list -json | jq -r '.project.schemes[0]')" >> $GITHUB_ENV
+          echo "SCHEME=$(xcodebuild -list -json | jq -r '.project.schemes[0]')" >> $GITHUB_ENV
       - name: Build and test app
         shell: bash --noprofile --norc -eo pipefail {0}
         run: |
