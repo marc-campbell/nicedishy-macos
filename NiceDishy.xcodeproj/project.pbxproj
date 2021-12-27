@@ -32,6 +32,7 @@
 		4904472C277580FA00860F1E /* DAKeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAKeychain.swift; sourceTree = "<group>"; };
 		4904472E2778BE7800860F1E /* DishyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DishyService.swift; sourceTree = "<group>"; };
 		4904473027798AF300860F1E /* FileDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloader.swift; sourceTree = "<group>"; };
+		49044733277A6EC100860F1E /* NiceDishy.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = NiceDishy.xctestplan; sourceTree = "<group>"; };
 		49293AA6380842305AB8D8C6 /* Pods-NiceDishy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NiceDishy.debug.xcconfig"; path = "Target Support Files/Pods-NiceDishy/Pods-NiceDishy.debug.xcconfig"; sourceTree = "<group>"; };
 		4BA859585EFEBF5D9D6246BA /* Pods-NiceDishy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NiceDishy.release.xcconfig"; path = "Target Support Files/Pods-NiceDishy/Pods-NiceDishy.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -51,6 +52,7 @@
 		2D65A49327193EEC00811FDC = {
 			isa = PBXGroup;
 			children = (
+				49044733277A6EC100860F1E /* NiceDishy.xctestplan */,
 				2D65A49E27193EEC00811FDC /* NiceDishy */,
 				2D65A49D27193EEC00811FDC /* Products */,
 				C2787638695C57480E483EE6 /* Pods */,

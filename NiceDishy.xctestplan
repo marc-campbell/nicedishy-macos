@@ -1,0 +1,23 @@
+{
+  "configurations" : [
+    {
+      "id" : "BA4FE9DC-BB6A-40B3-A458-DA486319768B",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:NiceDishy.xcodeproj",
+      "identifier" : "2D65A49B27193EEC00811FDC",
+      "name" : "NiceDishy"
+    }
+  },
+  "testTargets" : [
+
+  ],
+  "version" : 1
+}
