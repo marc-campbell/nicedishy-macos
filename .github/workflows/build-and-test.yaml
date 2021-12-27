@@ -16,4 +16,4 @@ jobs:
       - name: Build and test app
         shell: bash --noprofile --norc -eo pipefail {0}
         run: |
-          xcodebuild -scheme "$SCHEME" test CODE_SIGN_IDENTITY=- | xcpretty
+          xcodebuild -scheme "$SCHEME" build CODE_SIGN_IDENTITY=- | xcpretty
