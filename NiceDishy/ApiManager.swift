@@ -12,7 +12,7 @@ class ApiManager {
     
     // production
 //    static let CONNECT_DISHY_URL = "https://nicedishy.com/connect_device"
-//    static let PUSH_DATA_URL = "https://nicedishy.com/"
+//    static let PUSH_DATA_URL = "https://api.nicedishy.com/api/v1/stats"
   
     // local dev
     static let CONNECT_DISHY_URL = "https://nicedishy-marccampbell.cloud.okteto.net/connect_device"

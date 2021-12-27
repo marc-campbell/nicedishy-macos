@@ -20,8 +20,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         AppManager.shared.setupStatusBar()
         AppManager.shared.showIconOnDock(false)
         
+        // if we are logged in, send data immediately
+        if (ApiManager.shared.dishyToken != nil) {
+            AppManager.shared.dishyService.getData()
+        }
+        
         // the timer is the main data collection method...
-        Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(self.pollInterval), userInfo: nil, repeats: true)
+        let interval = 60.0 * 5
+        Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.pollInterval), userInfo: nil, repeats: true)
     }
     
     // pollInterval is called on an inteval and should handle collecting and sending data to the api
@@ -33,6 +39,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         
+        print("getting and sending data")
         AppManager.shared.dishyService.getData()
     }
 
@@ -59,6 +66,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         ApiManager.shared.dishyToken = value
         AppManager.shared.setupStatusBar()
+        
+        AppManager.shared.dishyService.getData()
     }
 }
 

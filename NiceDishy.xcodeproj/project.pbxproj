@@ -14,6 +14,7 @@
 		2DCDF2A1272C4A3900C49D40 /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCDF2A0272C4A3900C49D40 /* AppManager.swift */; };
 		4904472D277580FA00860F1E /* DAKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4904472C277580FA00860F1E /* DAKeychain.swift */; };
 		4904472F2778BE7800860F1E /* DishyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4904472E2778BE7800860F1E /* DishyService.swift */; };
+		4904473127798AF300860F1E /* FileDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4904473027798AF300860F1E /* FileDownloader.swift */; };
 		B37742274D66D1E7D2420F20 /* libPods-NiceDishy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A00C0447D2507E9F95C5E1D /* libPods-NiceDishy.a */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +31,7 @@
 		2DCDF2A0272C4A3900C49D40 /* AppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
 		4904472C277580FA00860F1E /* DAKeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAKeychain.swift; sourceTree = "<group>"; };
 		4904472E2778BE7800860F1E /* DishyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DishyService.swift; sourceTree = "<group>"; };
+		4904473027798AF300860F1E /* FileDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloader.swift; sourceTree = "<group>"; };
 		49293AA6380842305AB8D8C6 /* Pods-NiceDishy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NiceDishy.debug.xcconfig"; path = "Target Support Files/Pods-NiceDishy/Pods-NiceDishy.debug.xcconfig"; sourceTree = "<group>"; };
 		4BA859585EFEBF5D9D6246BA /* Pods-NiceDishy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NiceDishy.release.xcconfig"; path = "Target Support Files/Pods-NiceDishy/Pods-NiceDishy.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -77,6 +79,7 @@
 				2DBD4E982730E61F0060153A /* NiceDishy-Bridging-Header.h */,
 				4904472C277580FA00860F1E /* DAKeychain.swift */,
 				4904472E2778BE7800860F1E /* DishyService.swift */,
+				4904473027798AF300860F1E /* FileDownloader.swift */,
 			);
 			path = NiceDishy;
 			sourceTree = "<group>";
@@ -212,6 +215,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4904473127798AF300860F1E /* FileDownloader.swift in Sources */,
 				2D65A4A027193EEC00811FDC /* AppDelegate.swift in Sources */,
 				4904472F2778BE7800860F1E /* DishyService.swift in Sources */,
 				4904472D277580FA00860F1E /* DAKeychain.swift in Sources */,
