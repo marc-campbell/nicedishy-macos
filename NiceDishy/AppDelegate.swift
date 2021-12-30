@@ -26,7 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         // the timer is the main data collection method...
-        let interval = 60.0 * 5
+        let interval = 60.0 * 60
         Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.pollInterval), userInfo: nil, repeats: true)
     }
     

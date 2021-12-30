@@ -38,9 +38,7 @@ class AppManager {
             loginItem.target = self
             menu.addItem(loginItem)
             menu.addItem(NSMenuItem.separator())
-            let statusItem = NSMenuItem(title: "Get Status", action: #selector(onGetStatus), keyEquivalent: "")
-            statusItem.target = self
-            menu.addItem(statusItem)
+
             let quitItem = NSMenuItem(title: "Quit", action: #selector(onQuit), keyEquivalent: "")
             quitItem.target = self
             menu.addItem(quitItem)
