@@ -23,16 +23,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // if we are logged in, send data immediately
         if (ApiManager.shared.dishyToken != nil) {
             AppManager.shared.dishyService.getData()
+            AppManager.shared.dishyService.getSpeed()
         }
         
         // the timer is the main data collection method...
-        let interval = 60.0 * 60
-        Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.pollInterval), userInfo: nil, repeats: true)
+        let intervalWithSpeedTest = 60.0 * 60
+        Timer.scheduledTimer(timeInterval: intervalWithSpeedTest, target: self, selector: #selector(self.pollIntervalWithSpeedTest), userInfo: nil, repeats: true)
+        
+        let intervalWithoutSpeedTest = 60.0
+        Timer.scheduledTimer(timeInterval: intervalWithoutSpeedTest, target: self, selector: #selector(self.pollIntervalWithoutSpeedTest), userInfo: nil, repeats: true)
     }
     
-    // pollInterval is called on an inteval and should handle collecting and sending data to the api
+    // pollIntervalWithSpeedTest is called on an inteval and should handle collecting and sending data to the api
     // this will be called even if not logged in
-    @objc func pollInterval() {
+    @objc func pollIntervalWithSpeedTest() {
+        // if logged in, get and send data
+        if (ApiManager.shared.dishyToken == nil) {
+            print("not logged in")
+            return
+        }
+        
+        print("getting and sending speed")
+        AppManager.shared.dishyService.getSpeed()
+    }
+    
+    // pollIntervalWithoutSpeedTest is called on an inteval and should handle collecting and sending data to the api
+    // this will be called even if not logged in
+    @objc func pollIntervalWithoutSpeedTest() {
         // if logged in, get and send data
         if (ApiManager.shared.dishyToken == nil) {
             print("not logged in")
@@ -68,6 +85,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         AppManager.shared.setupStatusBar()
         
         AppManager.shared.dishyService.getData()
+        AppManager.shared.dishyService.getSpeed()
     }
 }
 
