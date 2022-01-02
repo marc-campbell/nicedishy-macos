@@ -10,7 +10,7 @@ jobs:
       - name: check out code
         uses: actions/checkout@v2
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
@@ -21,28 +21,28 @@ jobs:
         run: |
           pod install
 
-      - name: build app
-        shell: bash --noprofile --norc -eo pipefail {0}
-        run: |
-          xcodebuild -workspace NiceDishy.xcworkspace -scheme "NiceDishy" install DSTROOT=build/root | xcpretty
+      # - name: build app
+      #   shell: bash --noprofile --norc -eo pipefail {0}
+      #   run: |
+      #     xcodebuild -workspace NiceDishy.xcworkspace -scheme "NiceDishy" install DSTROOT=build/root | xcpretty
 
-      - name: package app
-        run: |
-          hdiutil create \
-                  -fs HFS+ \
-                  -srcfolder "build/root/Applications/NiceDishy.app" \
-                  -volname "NiceDishy" "build/NiceDishy.dmg"
+      # - name: package app
+      #   run: |
+      #     hdiutil create \
+      #             -fs HFS+ \
+      #             -srcfolder "build/root/Applications/NiceDishy.app" \
+      #             -volname "NiceDishy" "build/NiceDishy.dmg"
 
-      - name: sign app
-        run: |
-          npx notarize-cli --file "build/NiceDishy.dmg"
-        env:
-          NOTARIZE_USERNAME: ${{ secrets.NOTARIZE_USERNAME }}
-          NOTARIZE_PASSWORD: ${{ secrets.NOTARIZE_PASSWORD }}
+      # - name: sign app
+      #   run: |
+      #     npx notarize-cli --file "build/NiceDishy.dmg"
+      #   env:
+      #     NOTARIZE_USERNAME: ${{ secrets.NOTARIZE_USERNAME }}
+      #     NOTARIZE_PASSWORD: ${{ secrets.NOTARIZE_PASSWORD }}
 
-      - name: release app
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build/NiceDishy.dmg
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: release app
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     files: build/NiceDishy.dmg
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
