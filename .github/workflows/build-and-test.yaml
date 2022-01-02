@@ -17,9 +17,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
             
-      - name: install pods  
-        run: |
-          pod install
+      - name: setup-cocoapods
+        uses: maxim-lobanov/setup-cocoapods@v1
+        with:
+          podfile-path: myApp/Podfile.lock
 
       - name: import signing certificates
         run: |
