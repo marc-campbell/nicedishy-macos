@@ -4,7 +4,7 @@ on:
 
 jobs:
   build-and-release:
-    runs-on: macos-latest
+    runs-on: self-hosted
 
     steps:
       - name: check out code
