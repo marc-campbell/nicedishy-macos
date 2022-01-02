@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [release-ci]
+    tags: v*
 
 jobs:
   build-and-release:
