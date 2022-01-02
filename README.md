@@ -11,3 +11,8 @@ Open NiceDishy.xcworkspace
 ## Docs
 
 See Starlink gRPC Tools in Python [Github Repository](https://github.com/sparky8512/starlink-grpc-tools)\
+
+## Building
+
+https://developer.apple.com/forums/thread/662300
+

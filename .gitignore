@@ -11,8 +11,10 @@ xcuserdata/
 !*.xcodeproj/xcshareddata/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+**/*.UserInterfaceState.xcuserstate
 
 ### CocoaPods ###
 Pods/
-Podfile.lock
 Pods/Manifest.lock
+
+build

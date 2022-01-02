@@ -386,7 +386,8 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = NiceDishy/NiceDishy.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = SVB2S5YXF4;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -397,6 +398,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.marccampbell.NiceDishy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "NiceDishy/NiceDishy-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
