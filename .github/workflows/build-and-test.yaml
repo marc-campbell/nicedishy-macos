@@ -77,7 +77,7 @@ jobs:
 
       - name: sign app
         run: |
-          npx notarize-cli --file "build/NiceDishy.dmg"
+          npx notarize-cli --file "build/NiceDishy.dmg" --bundle-id com.marcecampbell.NiceDishy
         env:
           NOTARIZE_USERNAME: ${{ secrets.NOTARIZE_USERNAME }}
           NOTARIZE_PASSWORD: ${{ secrets.NOTARIZE_PASSWORD }}
