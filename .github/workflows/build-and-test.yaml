@@ -22,9 +22,9 @@ jobs:
         with:
           podfile-path: ./Podfile.lock
 
-      # - name: install pods  
-      #   run: |
-      #     pod install
+      - name: install pods  
+        run: |
+          pod install
 
       - name: import signing certificates
         run: |
