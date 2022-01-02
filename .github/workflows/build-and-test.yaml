@@ -22,6 +22,10 @@ jobs:
         with:
           podfile-path: ./Podfile.lock
 
+      # - name: install pods  
+      #   run: |
+      #     pod install
+
       - name: import signing certificates
         run: |
           KEYCHAIN_FILE=default.keychain
@@ -42,8 +46,15 @@ jobs:
       - name: build app
         shell: bash --noprofile --norc -eo pipefail {0}
         run: |
-          xcodebuild -workspace NiceDishy.xcworkspace -scheme "NiceDishy" install DSTROOT=build/root | xcpretty
+          xcodebuild \
+            -workspace NiceDishy.xcworkspace \
+            -scheme "NiceDishy" \
+            install \
+            DSTROOT=build/root
 
+      - name: debug
+        run: |
+          ls && ls build && ls build/root && ls build/root/Applications
       - name: package app
         run: |
           hdiutil create \
