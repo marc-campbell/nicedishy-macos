@@ -11,6 +11,7 @@ xcuserdata/
 !*.xcodeproj/xcshareddata/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+!*.UserInterfaceState.xcuserstate
 
 ### CocoaPods ###
 Pods/
