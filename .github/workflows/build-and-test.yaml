@@ -65,9 +65,10 @@ jobs:
             install \
             DSTROOT=build/root
 
-      - name: debug
+      - name: add a link to the Applications folder
         run: |
-          ls && ls build && ls build/root && ls build/root/Applications
+          ln -s /Applications build/Applications
+
       - name: package app
         run: |
           hdiutil create \
