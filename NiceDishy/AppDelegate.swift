@@ -27,10 +27,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         // the timer is the main data collection method...
-        let intervalWithSpeedTest = 60.0 * 60
+        let intervalWithSpeedTest = 60.0 * 60  // hour
         Timer.scheduledTimer(timeInterval: intervalWithSpeedTest, target: self, selector: #selector(self.pollIntervalWithSpeedTest), userInfo: nil, repeats: true)
         
-        let intervalWithoutSpeedTest = 60.0
+        let intervalWithoutSpeedTest = 60.0  // minute
         Timer.scheduledTimer(timeInterval: intervalWithoutSpeedTest, target: self, selector: #selector(self.pollIntervalWithoutSpeedTest), userInfo: nil, repeats: true)
     }
     
