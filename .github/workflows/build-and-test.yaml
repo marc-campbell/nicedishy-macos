@@ -65,15 +65,24 @@ jobs:
             install \
             DSTROOT=build/root
 
+      - name: make the final build dir
+        run: |
+          mkdir -p final-build
+
+      - name: copy the final build
+        run: |
+          cp build/root/Applications/NiceDishy.app final-build
+
       - name: add a link to the Applications folder
         run: |
-          ln -s /Applications build/Applications
+          ln -s /Applications final-build/Applications
+
 
       - name: package app
         run: |
           hdiutil create \
                   -fs HFS+ \
-                  -srcfolder "build/root/Applications/NiceDishy.app" \
+                  -srcfolder "final-build" \
                   -volname "NiceDishy" "build/NiceDishy.dmg"
 
       - name: sign app
