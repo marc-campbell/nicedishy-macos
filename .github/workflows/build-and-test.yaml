@@ -71,7 +71,7 @@ jobs:
 
       - name: copy the final build
         run: |
-          cp build/root/Applications/NiceDishy.app final-build
+          cp -r build/root/Applications/NiceDishy.app final-build
 
       - name: add a link to the Applications folder
         run: |
