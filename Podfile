@@ -6,4 +6,5 @@ install! 'cocoapods', :deterministic_uuids => false
 target 'NiceDishy' do
   # Depend on the generated NiceDishy library.
   pod 'NiceDishy', :path => '.'
+  pod 'SwiftSoup'
 end
