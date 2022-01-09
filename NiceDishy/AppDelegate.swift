@@ -26,12 +26,71 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             AppManager.shared.dishyService.getSpeed()
         }
         
-        // the timer is the main data collection method...
-        let intervalWithSpeedTest = 60.0 * 60  // hour
-        Timer.scheduledTimer(timeInterval: intervalWithSpeedTest, target: self, selector: #selector(self.pollIntervalWithSpeedTest), userInfo: nil, repeats: true)
+        createSpeedTestTimer()
+        createDataTimer()
         
-        let intervalWithoutSpeedTest = 60.0  // minute
-        Timer.scheduledTimer(timeInterval: intervalWithoutSpeedTest, target: self, selector: #selector(self.pollIntervalWithoutSpeedTest), userInfo: nil, repeats: true)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.preferenceChanged),
+            name: Preference.valueChangedNotification,
+            object: nil
+        )
+    }
+    
+    func applicationWillTerminate(_ aNotification: Notification) {
+        // Insert code here to tear down your application
+    }
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        guard let url = urls.first, let host = url.host, host == "connected" else {
+            return
+        }
+        
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+              let queryItems = components.queryItems else {
+            return
+        }
+        
+        guard let token = queryItems.first(where: { $0.name == "token" }),
+              let value = token.value else {
+            return
+        }
+        
+        DAKeychain.shared["com.nicedishy.token"] = value;
+        
+        ApiManager.shared.dishyToken = value
+        AppManager.shared.setupStatusBar()
+        
+        AppManager.shared.dishyService.getData()
+        AppManager.shared.dishyService.getSpeed()
+    }
+    
+    // MARK: - Timer & Notification
+
+    var speedTestTimer: Timer?
+    var dataTimer: Timer?
+    
+    func createSpeedTestTimer() {
+        // the timer is the main data collection method...
+        // let intervalWithSpeedTest = 60.0 * 60  // hour
+        speedTestTimer = Timer.scheduledTimer(
+            timeInterval: Double(Preference.speedTestInterval),
+            target: self,
+            selector: #selector(self.pollIntervalWithSpeedTest),
+            userInfo: nil,
+            repeats: true
+        )
+    }
+    
+    func createDataTimer() {
+        // let intervalWithoutSpeedTest = 60.0  // minute
+        dataTimer = Timer.scheduledTimer(
+            timeInterval: Double(Preference.dataInterval),
+            target: self,
+            selector: #selector(self.pollIntervalWithoutSpeedTest),
+            userInfo: nil,
+            repeats: true
+        )
     }
     
     // pollIntervalWithSpeedTest is called on an inteval and should handle collecting and sending data to the api
@@ -60,32 +119,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         AppManager.shared.dishyService.getData()
     }
 
-    func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
-    }
-
-    func application(_ application: NSApplication, open urls: [URL]) {
-        guard let url = urls.first, let host = url.host, host == "connected" else {
-            return
+    @objc func preferenceChanged(_ n: Notification) {
+        if let t = speedTestTimer {
+            t.invalidate()
+            createSpeedTestTimer()
         }
         
-        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-              let queryItems = components.queryItems else {
-            return
+        if let t = dataTimer {
+            t.invalidate()
+            createDataTimer()
         }
-        
-        guard let token = queryItems.first(where: { $0.name == "token" }),
-              let value = token.value else {
-            return
-        }
-        
-        DAKeychain.shared["com.nicedishy.token"] = value;
-        
-        ApiManager.shared.dishyToken = value
-        AppManager.shared.setupStatusBar()
-        
-        AppManager.shared.dishyService.getData()
-        AppManager.shared.dishyService.getSpeed()
     }
 }
 

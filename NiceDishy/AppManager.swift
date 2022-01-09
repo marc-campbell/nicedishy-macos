@@ -13,6 +13,8 @@ class AppManager {
     let appStatusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     let dishyService = DishyService()
     
+    let preferenceWinController = PreferenceWndController(windowNibName: "PreferenceWndController")
+    
     func setupStatusBar() {
         appStatusItem.button?.title = ""
         appStatusItem.button?.image = NSImage(named: "icon18")
@@ -30,6 +32,13 @@ class AppManager {
             let loginItem = NSMenuItem(title: "Connect Dishy", action: #selector(onLogin), keyEquivalent: "")
             loginItem.target = self
             menu.addItem(loginItem)
+            
+            menu.addItem(NSMenuItem.separator())
+            let preferenceItem = NSMenuItem(title: "Preferences", action: #selector(onPreference), keyEquivalent: "")
+            preferenceItem.target = self
+            menu.addItem(preferenceItem)
+            menu.addItem(NSMenuItem.separator())
+            
             let quitItem = NSMenuItem(title: "Quit", action: #selector(onQuit), keyEquivalent: "")
             quitItem.target = self
             menu.addItem(quitItem)
@@ -74,6 +83,12 @@ class AppManager {
             DAKeychain.shared.delete(withKey: "com.nicedishy.token")
             setupStatusBar()
         }
+    }
+    
+    @objc func onPreference() {
+        preferenceWinController.showWindow(nil)
+        
+        NSApp.activate(ignoringOtherApps: true)
     }
     
     @objc func onQuit() {

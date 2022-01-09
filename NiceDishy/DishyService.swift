@@ -22,7 +22,7 @@ class DishyService {
             let fileSize = 136314880.0 * 8
             let downloadSpeed = fileSize / delta
             
-            var formatter = DateFormatter()
+            let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
             
             var speed : [String:Any] = [String:Any]()
