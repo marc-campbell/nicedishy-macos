@@ -36,7 +36,7 @@ class DishyService {
                 if (error != nil) {
                     print("error retreiving upload speed", error!);
                 } else {
-                    speed["upload"] = 0.0; //"uploadSpeed;
+                    speed["upload"] = uploadSpeed;
                 }
                 
                 payload["speed"] = speed;
