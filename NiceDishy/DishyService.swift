@@ -24,27 +24,26 @@ class DishyService {
         var speed : [String:Any] = [String:Any]()
         
         let fastSpeedTest = FastSpeedTest();
+        print("starting download test")
         fastSpeedTest.download(completion:{(downloadSpeed:Float64?, error:Error?) in
             if (error != nil) {
                 print("error retreiving download speed", error!)
             } else {
                 speed["download"] = downloadSpeed!;
-            }            
+            }
+            print("starting upload test")
             fastSpeedTest.upload(completion:{(uploadSpeed:Float64?, error:Error?) in
                 if (error != nil) {
                     print("error retreiving upload speed", error!);
                 } else {
-                    speed["upload"] = uploadSpeed;
+                    speed["upload"] = 0.0; //"uploadSpeed;
                 }
                 
                 payload["speed"] = speed;
                 
-                do {
-                    ApiManager.shared.pushSpeed(payload: payload) { pushResult in
-                        print("push complete")
-                    }
-                } catch {
-                    print("JSON Serialization error: ", error)
+                print("sending speed data")
+                ApiManager.shared.pushSpeed(payload: payload) { pushResult in
+                    print("push complete")
                 }
             });
         });
@@ -73,7 +72,7 @@ class DishyService {
                 return
             }
                         
-            var formatter = DateFormatter()
+            let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
             
             var deviceInfo : [String:Any] = [String:Any]()
@@ -100,13 +99,10 @@ class DishyService {
             payload["when"] = formatter.string(from:now)
             payload["status"] = status
             
-            do {
-                ApiManager.shared.pushData(payload: payload) { pushResult in
-                    print("push complete")
-                }
-            } catch {
-                print("JSON Serialization error: ", error)
+            ApiManager.shared.pushData(payload: payload) { pushResult in
+                print("push complete")
             }
+
         }, responseDispatchQueue: nil)
         device?.handle(withMessage: request, responseHandler: handler!, callOptions: nil).start()
     }

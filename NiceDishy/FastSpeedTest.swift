@@ -20,7 +20,16 @@ enum FastSpeedErrors: Error {
 class FastSpeedTest {
     var token: String?;
     var manifestURLs: [String]?;
+
+    let fastServerCount: Int = 1;
+
+    // control the download tests
+    let downloadSizes: [Int] = [2048, 26214400];
+    let concurrentDownloadLimit: Int = 12;
     
+    // control the upload tests
+    let uploadSizes:[Int] = [4096, 131072, 1048576, 8388608, 33554432];
+
     private func fetchToken() -> Bool {
         // get the html
         let fastURLString = "https://fast.com";
@@ -64,14 +73,14 @@ class FastSpeedTest {
         }
 
         let tokenMatched = matches(for: "token:[\"']([[:alpha:]]+)['\"]", in: fastJSString);
-        var tokenMatchedComppnents = tokenMatched[0].components(separatedBy: ":");
-        if (tokenMatchedComppnents.count < 2) {
+        let tokenMatchedComponents = tokenMatched[0].components(separatedBy: ":");
+        if (tokenMatchedComponents.count < 2) {
             print("unable to find token in script");
             return false;
         }
         
         // the token is in quotes, remove
-        var token = tokenMatchedComppnents[1];
+        var token = tokenMatchedComponents[1];
         token.removeFirst()
         token.removeLast();
         
@@ -86,7 +95,7 @@ class FastSpeedTest {
         }
         
         // eg: "https://api.fast.com/netflix/speedtest/v2?https=true&token=...&urlCount=5"
-        let fastManufestsURLString = "https://api.fast.com/netflix/speedtest/v2?https=true&token=" + self.token! + "&urlCount=2";
+        let fastManufestsURLString = "https://api.fast.com/netflix/speedtest/v2?https=true&token=" + self.token! + "&urlCount=\(fastServerCount)";
         guard let fastManifestsURL = URL(string: fastManufestsURLString) else {
             print("Error: \(fastManufestsURLString) doesn't seem to be a valid URL");
             return false;
@@ -135,55 +144,51 @@ class FastSpeedTest {
                 completion(nil, FastSpeedErrors.failedToFetchManifests);
             }
         }
-        
-        var downloadSizes:[Int] = [/*4096, 131072,*/ 1048576, 8388608];
-        var downloadRepeats:[Int] = [0, 1, 2];
+
         
         var resultTotalSize: Int = 0;
         var resultTotalTime: Float64 = 0;
 
-        print("Starting \(downloadRepeats.count) runs")
-        for downloadRepeat in downloadRepeats {
-            for manifestURLString in self.manifestURLs! {
-                var urlResultsReceived = 0;
-                var urlResultsExpected = downloadSizes.count
+        print("Starting download run(s)")
+        for manifestURLString in self.manifestURLs! {
+            var urlResultsReceived = 0;
+            let urlResultsExpected = downloadSizes.count
+            
+            for downloadSize in downloadSizes {
+
+                guard let manifestURL = URL(string: manifestURLString) else {
+                    print("Error: \(manifestURLString) doesn't seem to be a valid URL");
+                    continue;
+                }
+                let chunkURL = manifestURL.appendingPathComponent("/range/0-\(downloadSize)");
                 
-                for downloadSize in downloadSizes {
-    
-                    guard let manifestURL = URL(string: manifestURLString) else {
-                        print("Error: \(manifestURLString) doesn't seem to be a valid URL");
-                        continue;
-                    }
-                    let chunkURL = manifestURL.appendingPathComponent("/range/0-\(downloadSize)");
-                    
-                    downloadChunk(url: chunkURL, completion: {(size: Int?, time: Float64?, error: Error?) in
-                        if (error != nil) {
-                            print(error)
-                            return;
-                        }
-                        
-                        resultTotalSize += size!;
-                        resultTotalTime += time!;
-                        
-                        urlResultsReceived += 1;
-                    });
-                }
-                while(true) {
-                    if (urlResultsReceived >= urlResultsExpected) {
-                        print("RUN #\(downloadRepeat): received all download results (\(urlResultsReceived) of \(urlResultsExpected) from \(manifestURLString)")
-                        break;
+                downloadChunk(url: chunkURL, completion: {(size: Int?, time: Float64?, error: Error?) in
+                    if (error != nil) {
+                        print(error!)
+                        return;
                     }
                     
-//                    print("RUN #\(downloadRepeat) recieved \(urlResultsReceived) of \(urlResultsExpected) from \(manifestURLString)");
-                    Thread.sleep(forTimeInterval: 1)
+                    resultTotalSize += size!;
+                    resultTotalTime += time!;
+                    
+                    urlResultsReceived += 1;
+                });
+            }
+            while(true) {
+                if (urlResultsReceived >= urlResultsExpected) {
+                    print("received all download results (\(urlResultsReceived) of \(urlResultsExpected) from \(manifestURLString)")
+                    completion(Float64(resultTotalSize) / resultTotalTime, nil);
+                    return;
                 }
+                
+                Thread.sleep(forTimeInterval: 1)
             }
         }
-        
-        completion(Float64(resultTotalSize) / resultTotalTime, nil);
     }
     
     public func downloadChunk(url: URL, completion: @escaping (Int?, Float64?, Error?) -> Void) {
+        let urlString = url.absoluteString;
+        print("making get request to \(urlString)")
         let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
 
         let destinationUrl = documentsUrl.appendingPathComponent(url.lastPathComponent)
@@ -223,8 +228,8 @@ class FastSpeedTest {
                     let afterDownload = Date();
                     let delta = afterDownload.timeIntervalSince(now);
                     
-                    let size = data!.count;
-                    completion(data!.count * 8, delta, error)
+                    let size = data!.count * 8; // bytes
+                    completion(size , delta, error)
                 } else {
                     completion(0, 0, error)
                 }
@@ -247,47 +252,45 @@ class FastSpeedTest {
         }
         
         
-        var uploadSizes:[Int] = [4096, 131072, 1048576, 8388608, 33554432];
-        var uploadRepeats:[Int] = [0];
-        
         var resultTotalSize: Int = 0;
         var resultTotalTime: Float64 = 0;
-        var resultsReceived = 0;
-        var resultsExpected = uploadSizes.count * uploadRepeats.count * self.manifestURLs!.count;
-        
-        for uploadSize in uploadSizes {
-            for uploadRepeat in uploadRepeats {
-                for manifestURLString in self.manifestURLs! {
-                    guard let manifestURL = URL(string: manifestURLString) else {
-                        print("Error: \(manifestURLString) doesn't seem to be a valid URL");
-                        continue;
-                    }
-                    let chunkURL = manifestURL.appendingPathComponent("/range/0-\(uploadSize)");
-                    
-                    uploadChunk(url: chunkURL, completion: {(size: Int?, time: Float64?, error: Error?) in
-                        if (error != nil) {
-                            print(error)
-                            return;
-                        }
-                        
-                        resultTotalSize += size!;
-                        resultTotalTime += time!;
-                        resultsReceived += 1;
-                    });
-                }
-            }
-        }
-        
-        while(true) {
-            if (resultsReceived >= resultsExpected) {
-                print("received all upload results (\(resultsReceived) of \(resultsExpected)")
-                completion(Float64(resultTotalSize) / resultTotalTime, nil);
-                return;
-            }
+
+        print("Starting upload run(s)")
+        for manifestURLString in self.manifestURLs! {
+            var urlResultsReceived = 0;
+            let urlResultsExpected = downloadSizes.count
             
-            print("recieved \(resultsReceived) of \(resultsExpected) \(resultTotalSize) bits uploaded so far");
-            Thread.sleep(forTimeInterval: 1)
+            for downloadSize in downloadSizes {
+
+                guard let manifestURL = URL(string: manifestURLString) else {
+                    print("Error: \(manifestURLString) doesn't seem to be a valid URL");
+                    continue;
+                }
+                let chunkURL = manifestURL.appendingPathComponent("/range/0-\(downloadSize)");
+                
+                uploadChunk(url: chunkURL, completion: {(size: Int?, time: Float64?, error: Error?) in
+                    if (error != nil) {
+                        print(error!)
+                        return;
+                    }
+                    
+                    resultTotalSize += size!;
+                    resultTotalTime += time!;
+                    
+                    urlResultsReceived += 1;
+                });
+            }
+            while(true) {
+                if (urlResultsReceived >= urlResultsExpected) {
+                    print("received all upload results (\(urlResultsReceived) of \(urlResultsExpected) from \(manifestURLString)")
+                    completion(Float64(resultTotalSize) / resultTotalTime, nil);
+                    return;
+                }
+                
+                Thread.sleep(forTimeInterval: 1)
+            }
         }
+    
     }
     
     public func uploadChunk(url: URL, completion: @escaping (Int?, Float64?, Error?) -> Void) {
