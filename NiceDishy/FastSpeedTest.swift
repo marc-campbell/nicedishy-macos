@@ -12,6 +12,7 @@ enum FastSpeedErrors: Error {
     case failedToFetchManifests;
     case notReceived200;
     case failedToUpload;
+    case failedToGenerateData;
 }
 
 
@@ -28,8 +29,8 @@ class FastSpeedTest {
     let concurrentDownloadLimit: Int = 12;
     
     // control the upload tests
-    let uploadSizes:[Int] = [4096, 131072, 1048576, 8388608, 33554432];
-
+    let uploadSizes:[Int] = [1024, 131072];
+    
     private func fetchToken() -> Bool {
         // get the html
         let fastURLString = "https://fast.com";
@@ -177,13 +178,14 @@ class FastSpeedTest {
             while(true) {
                 if (urlResultsReceived >= urlResultsExpected) {
                     print("received all download results (\(urlResultsReceived) of \(urlResultsExpected) from \(manifestURLString)")
-                    completion(Float64(resultTotalSize) / resultTotalTime, nil);
-                    return;
+                    break;
                 }
                 
                 Thread.sleep(forTimeInterval: 1)
             }
         }
+        
+        completion(Float64(resultTotalSize) / resultTotalTime, nil);
     }
     
     public func downloadChunk(url: URL, completion: @escaping (Int?, Float64?, Error?) -> Void) {
@@ -268,13 +270,13 @@ class FastSpeedTest {
                 }
                 let chunkURL = manifestURL.appendingPathComponent("/range/0-\(downloadSize)");
                 
-                uploadChunk(url: chunkURL, completion: {(size: Int?, time: Float64?, error: Error?) in
+                uploadChunk(url: chunkURL, size: downloadSize, completion: {(time: Float64?, error: Error?) in
                     if (error != nil) {
                         print(error!)
                         return;
                     }
                     
-                    resultTotalSize += size!;
+                    resultTotalSize += downloadSize;
                     resultTotalTime += time!;
                     
                     urlResultsReceived += 1;
@@ -283,18 +285,56 @@ class FastSpeedTest {
             while(true) {
                 if (urlResultsReceived >= urlResultsExpected) {
                     print("received all upload results (\(urlResultsReceived) of \(urlResultsExpected) from \(manifestURLString)")
-                    completion(Float64(resultTotalSize) / resultTotalTime, nil);
-                    return;
+                    break;
                 }
                 
                 Thread.sleep(forTimeInterval: 1)
             }
         }
-    
+
+        completion(Float64(resultTotalSize) / resultTotalTime, nil);
     }
     
-    public func uploadChunk(url: URL, completion: @escaping (Int?, Float64?, Error?) -> Void) {
-        completion(0, 0, nil);
+    public func uploadChunk(url: URL, size: Int, completion: @escaping (Float64?, Error?) -> Void) {
+        let urlString = url.absoluteString;
+        print("making post request to \(urlString)")
+        
+        let now = Date();
+        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: nil)
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+
+        var keyData = Data(count: size)
+        let result = keyData.withUnsafeMutableBytes {
+            SecRandomCopyBytes(kSecRandomDefault, size, $0.baseAddress!)
+        }
+        if result == errSecSuccess {
+            request.httpBody = keyData
+        } else {
+            print("Problem generating random bytes")
+            completion(0, FastSpeedErrors.failedToGenerateData)
+        }
+
+        let task = session.dataTask(with: request, completionHandler: {
+            data, response, error in
+            
+            if (error != nil) {
+                completion(0, error);
+                return;
+            }
+
+            if let response = response as? HTTPURLResponse {
+                if (response.statusCode != 200) {
+                    completion(0, FastSpeedErrors.notReceived200)
+                    return;
+                }
+                
+                let afterDownload = Date();
+                let delta = afterDownload.timeIntervalSince(now);
+                completion(delta, error);
+            }
+        })
+        task.resume()
     }
     
     func matches(for regex: String, in text: String) -> [String] {
