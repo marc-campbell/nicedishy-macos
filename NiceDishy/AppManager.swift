@@ -43,6 +43,12 @@ class AppManager {
             quitItem.target = self
             menu.addItem(quitItem)
         } else {
+            menu.addItem(NSMenuItem.separator())
+            let preferenceItem = NSMenuItem(title: "Preferences", action: #selector(onPreference), keyEquivalent: "")
+            preferenceItem.target = self
+            menu.addItem(preferenceItem)
+            menu.addItem(NSMenuItem.separator())
+            
             let loginItem = NSMenuItem(title: "Disconnect Dishy", action: #selector(onLogin), keyEquivalent: "")
             loginItem.target = self
             menu.addItem(loginItem)

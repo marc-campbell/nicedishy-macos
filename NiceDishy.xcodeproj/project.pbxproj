@@ -15,6 +15,10 @@
 		4904472D277580FA00860F1E /* DAKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4904472C277580FA00860F1E /* DAKeychain.swift */; };
 		4904472F2778BE7800860F1E /* DishyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4904472E2778BE7800860F1E /* DishyService.swift */; };
 		4904473127798AF300860F1E /* FileDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4904473027798AF300860F1E /* FileDownloader.swift */; };
+		49B75593278C8ABE005AE65C /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B7558F278C8ABE005AE65C /* PreferencesView.swift */; };
+		49B75594278C8ABE005AE65C /* PreferenceWndController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49B75590278C8ABE005AE65C /* PreferenceWndController.xib */; };
+		49B75595278C8ABE005AE65C /* Preference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B75591278C8ABE005AE65C /* Preference.swift */; };
+		49B75596278C8ABE005AE65C /* PreferenceWndController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B75592278C8ABE005AE65C /* PreferenceWndController.swift */; };
 		B37742274D66D1E7D2420F20 /* libPods-NiceDishy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A00C0447D2507E9F95C5E1D /* libPods-NiceDishy.a */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +37,10 @@
 		4904472E2778BE7800860F1E /* DishyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DishyService.swift; sourceTree = "<group>"; };
 		4904473027798AF300860F1E /* FileDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloader.swift; sourceTree = "<group>"; };
 		49293AA6380842305AB8D8C6 /* Pods-NiceDishy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NiceDishy.debug.xcconfig"; path = "Target Support Files/Pods-NiceDishy/Pods-NiceDishy.debug.xcconfig"; sourceTree = "<group>"; };
+		49B7558F278C8ABE005AE65C /* PreferencesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		49B75590278C8ABE005AE65C /* PreferenceWndController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PreferenceWndController.xib; sourceTree = "<group>"; };
+		49B75591278C8ABE005AE65C /* Preference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preference.swift; sourceTree = "<group>"; };
+		49B75592278C8ABE005AE65C /* PreferenceWndController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferenceWndController.swift; sourceTree = "<group>"; };
 		4BA859585EFEBF5D9D6246BA /* Pods-NiceDishy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NiceDishy.release.xcconfig"; path = "Target Support Files/Pods-NiceDishy/Pods-NiceDishy.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -69,6 +77,10 @@
 		2D65A49E27193EEC00811FDC /* NiceDishy */ = {
 			isa = PBXGroup;
 			children = (
+				49B75591278C8ABE005AE65C /* Preference.swift */,
+				49B7558F278C8ABE005AE65C /* PreferencesView.swift */,
+				49B75592278C8ABE005AE65C /* PreferenceWndController.swift */,
+				49B75590278C8ABE005AE65C /* PreferenceWndController.xib */,
 				2D65A49F27193EEC00811FDC /* AppDelegate.swift */,
 				2D65A4A127193F0B00811FDC /* Assets.xcassets */,
 				2D65A4A327193F0B00811FDC /* MainMenu.xib */,
@@ -161,6 +173,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49B75594278C8ABE005AE65C /* PreferenceWndController.xib in Resources */,
 				2D65A4A227193F0B00811FDC /* Assets.xcassets in Resources */,
 				2D65A4A527193F0B00811FDC /* MainMenu.xib in Resources */,
 			);
@@ -217,10 +230,13 @@
 			files = (
 				4904473127798AF300860F1E /* FileDownloader.swift in Sources */,
 				2D65A4A027193EEC00811FDC /* AppDelegate.swift in Sources */,
+				49B75595278C8ABE005AE65C /* Preference.swift in Sources */,
 				4904472F2778BE7800860F1E /* DishyService.swift in Sources */,
+				49B75596278C8ABE005AE65C /* PreferenceWndController.swift in Sources */,
 				4904472D277580FA00860F1E /* DAKeychain.swift in Sources */,
 				2D1DEF8C2761C557008ED516 /* ApiManager.swift in Sources */,
 				2DCDF2A1272C4A3900C49D40 /* AppManager.swift in Sources */,
+				49B75593278C8ABE005AE65C /* PreferencesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
