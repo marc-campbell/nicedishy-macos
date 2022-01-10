@@ -18,7 +18,7 @@ class AppManager {
     func setupStatusBar() {
         appStatusItem.button?.title = ""
         appStatusItem.button?.image = NSImage(named: "icon18")
-        
+            
         appStatusItem.menu = createMenu()
     }
 

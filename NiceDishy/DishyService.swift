@@ -13,33 +13,41 @@ class DishyService {
     
     public func getSpeed() {
         let now = Date();
-        let url = URL(string: "https://speed.nicedishy.com/130mb")
-        FileDownloader.loadFileAsync(url: url!, completion:{(path:String?, error:Error?) in
-            print("received download speed data")
-            let afterDownload = Date()
-            let delta = afterDownload.timeIntervalSince(now);
-            
-            let fileSize = 136314880.0 * 8
-            let downloadSpeed = fileSize / delta
-            
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-            
-            var speed : [String:Any] = [String:Any]()
-            speed["download"] = downloadSpeed
-            
-            var payload : [String:Any] = [String:Any]()
-            payload["when"] = formatter.string(from:now)
-            payload["speed"] = speed
-            
-            do {
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        
+        
+        var payload : [String:Any] = [String:Any]()
+        payload["when"] = formatter.string(from:now)
+        
+        var speed : [String:Any] = [String:Any]()
+        
+        let fastSpeedTest = FastSpeedTest();
+        print("starting download test")
+        fastSpeedTest.download(completion:{(downloadSpeed:Float64?, error:Error?) in
+            if (error != nil) {
+                print("error retreiving download speed", error!)
+            } else {
+                speed["download"] = downloadSpeed!;
+            }
+            print("starting upload test")
+            fastSpeedTest.upload(completion:{(uploadSpeed:Float64?, error:Error?) in
+                if (error != nil) {
+                    print("error retreiving upload speed", error!);
+                } else {
+                    speed["upload"] = 0.0; //"uploadSpeed;
+                }
+                
+                payload["speed"] = speed;
+                
+                print("sending speed data")
                 ApiManager.shared.pushSpeed(payload: payload) { pushResult in
                     print("push complete")
                 }
-            } catch {
-                print("JSON Serialization error: ", error)
-            }
-        })
+            });
+        });
+
     }
     
     public func getData() {
@@ -64,7 +72,7 @@ class DishyService {
                 return
             }
                         
-            var formatter = DateFormatter()
+            let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
             
             var deviceInfo : [String:Any] = [String:Any]()
@@ -91,13 +99,10 @@ class DishyService {
             payload["when"] = formatter.string(from:now)
             payload["status"] = status
             
-            do {
-                ApiManager.shared.pushData(payload: payload) { pushResult in
-                    print("push complete")
-                }
-            } catch {
-                print("JSON Serialization error: ", error)
+            ApiManager.shared.pushData(payload: payload) { pushResult in
+                print("push complete")
             }
+
         }, responseDispatchQueue: nil)
         device?.handle(withMessage: request, responseHandler: handler!, callOptions: nil).start()
     }
