@@ -64,11 +64,11 @@ class DishyService {
 
         let request = Request()
         request.getStatus = GetStatusRequest()
-        let handler = GRPCUnaryResponseHandler<Response>(responseHandler: { [unowned self] (response, error) in
+        let handler = GRPCUnaryResponseHandler<Response>(responseHandler: { [unowned self] (response, error: Error?) in
             isBusy = false
             
             if error != nil {
-                print(error)
+                print(error!)
                 return
             }
                         
