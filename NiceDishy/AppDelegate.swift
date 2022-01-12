@@ -19,13 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         AppManager.shared.setupStatusBar()
         AppManager.shared.showIconOnDock(false)
-        
-        // if we are logged in, send data immediately
-        if (ApiManager.shared.dishyToken != nil) {
-            AppManager.shared.dishyService.getData()
-            AppManager.shared.dishyService.getSpeed()
-        }
-        
+                
         createSpeedTestTimer()
         createDataTimer()
         
@@ -72,7 +66,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func createSpeedTestTimer() {
         // the timer is the main data collection method...
-        // let intervalWithSpeedTest = 60.0 * 60  // hour
+        
+        // if we are logged in, send data immediately
+        if (ApiManager.shared.dishyToken != nil) {
+            AppManager.shared.dishyService.getData()
+            AppManager.shared.dishyService.getSpeed()
+        }
+
         speedTestTimer = Timer.scheduledTimer(
             timeInterval: Double(Preference.speedTestInterval),
             target: self,
