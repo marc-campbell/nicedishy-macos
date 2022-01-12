@@ -11,14 +11,16 @@ class ApiManager {
     static let shared = ApiManager()
     
     // production
-//   static let CONNECT_DISHY_URL = "https://nicedishy.com/connect_device"
-//   static let PUSH_DATA_URL = "https://api.nicedishy.com/api/v1/stats"
-//   static let PUSH_SPEED_URL = "https://api.nicedishy.com/api/v1/speed"
-
+#if RELEASE
+    static let CONNECT_DISHY_URL = "https://nicedishy.com/connect_device"
+    static let PUSH_DATA_URL = "https://api.nicedishy.com/api/v1/stats"
+    static let PUSH_SPEED_URL = "https://api.nicedishy.com/api/v1/speed"
+#else
     // local dev
-     static let CONNECT_DISHY_URL = "https://nicedishy-marccampbell.cloud.okteto.net/connect_device"
-     static let PUSH_DATA_URL = "https://nicedishy-api-marccampbell.cloud.okteto.net/api/v1/stats"
-     static let PUSH_SPEED_URL = "https://nicedishy-api-marccampbell.cloud.okteto.net/api/v1/speed"
+    static let CONNECT_DISHY_URL = "https://nicedishy-marccampbell.cloud.okteto.net/connect_device"
+    static let PUSH_DATA_URL = "https://nicedishy-api-marccampbell.cloud.okteto.net/api/v1/stats"
+    static let PUSH_SPEED_URL = "https://nicedishy-api-marccampbell.cloud.okteto.net/api/v1/speed"
+#endif
 
     var dishyToken: String?
     
