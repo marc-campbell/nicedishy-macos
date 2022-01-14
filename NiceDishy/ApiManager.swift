@@ -11,7 +11,7 @@ class ApiManager {
     static let shared = ApiManager()
     
     // production
-#if RELEASE
+#if PROD_URLS
     static let CONNECT_DISHY_URL = "https://nicedishy.com/connect_device"
     static let PUSH_DATA_URL = "https://api.nicedishy.com/api/v1/stats"
     static let PUSH_SPEED_URL = "https://api.nicedishy.com/api/v1/speed"
