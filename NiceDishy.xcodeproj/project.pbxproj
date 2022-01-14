@@ -392,7 +392,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.marccampbell.NiceDishy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROD_URLS = "$(PROD_URLS)";
 				SWIFT_OBJC_BRIDGING_HEADER = "NiceDishy/NiceDishy-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -419,7 +418,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.marccampbell.NiceDishy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROD_URLS = "$(PROD_URLS)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "NiceDishy/NiceDishy-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
