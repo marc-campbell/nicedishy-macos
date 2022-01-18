@@ -32,6 +32,8 @@ open class DAKeychain {
     }
     
     private func save(_ string: String?, forKey key: String) {
+        self.delete(withKey: key);
+        
         let query = keychainQuery(withKey: key)
         let objectData: Data? = string?.data(using: .utf8, allowLossyConversion: false)
 
@@ -47,7 +49,10 @@ open class DAKeychain {
             if let dictData = objectData {
                 query.setValue(dictData, forKey: kSecValueData as String)
                 let status = SecItemAdd(query, nil)
-                logPrint("Update status: ", status)
+                if status != errSecSuccess {
+                    let errorDescription = SecCopyErrorMessageString(status, nil)
+                    print("failed to save to keychain: ", errorDescription)
+                }
             }
         }
     }
@@ -75,7 +80,7 @@ open class DAKeychain {
         let result = NSMutableDictionary()
         result.setValue(kSecClassGenericPassword, forKey: kSecClass as String)
         result.setValue(key, forKey: kSecAttrService as String)
-        result.setValue(kSecAttrAccessibleAlwaysThisDeviceOnly, forKey: kSecAttrAccessible as String)
+        result.setValue(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly, forKey: kSecAttrAccessible as String)
         return result
     }
     

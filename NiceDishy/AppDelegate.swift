@@ -14,7 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // look for an auth token in keychain
-        let token = DAKeychain.shared["com.nicedishy.token"]
+        let token = DAKeychain.shared["com.nicedishy.devicetoken"]
         ApiManager.shared.dishyToken = token;
         
         AppManager.shared.setupStatusBar()
@@ -29,11 +29,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             name: Preference.valueChangedNotification,
             object: nil
         )
-        
-        // this is a hack because i don't know swift of mac dev
-        // and struggling to make the callback actually
-        // have the application singleton
-        createLoginTestTimer();
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -58,7 +53,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         
-        DAKeychain.shared["com.nicedishy.token"] = value;
+        DAKeychain.shared["com.nicedishy.devicetoken"] = value;
         
         ApiManager.shared.dishyToken = value
         AppManager.shared.setupStatusBar()
@@ -71,17 +66,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     var speedTestTimer: Timer?
     var dataTimer: Timer?
-    var loginTestTimer: Timer?
-    
-    func createLoginTestTimer() {
-        loginTestTimer = Timer.scheduledTimer(
-            timeInterval: 1.0,
-            target: self,
-            selector: #selector(self.pollIntervalLoginTest),
-            userInfo: nil,
-            repeats: true
-        )
-    }
     
     func createSpeedTestTimer() {
         // the timer is the main data collection method...
@@ -111,14 +95,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             repeats: true
         )
     }
-    
-    @objc func pollIntervalLoginTest() {
-        let token = DAKeychain.shared["com.nicedishy.token"]
-        ApiManager.shared.dishyToken = token;
-        
-        AppManager.shared.setupStatusBar()
-    }
-    
+
     // pollIntervalWithSpeedTest is called on an inteval and should handle collecting and sending data to the api
     // this will be called even if not logged in
     @objc func pollIntervalWithSpeedTest() {
