@@ -29,13 +29,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             name: Preference.valueChangedNotification,
             object: nil
         )
+        
+        // this is a hack because i don't know swift of mac dev
+        // and struggling to make the callback actually
+        // have the application singleton
+        createLoginTestTimer();
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }
 
+    // callback for when nicedishy:// urls are opened
     func application(_ application: NSApplication, open urls: [URL]) {
+        print("application open nicedishy:// url");
+        
         guard let url = urls.first, let host = url.host, host == "connected" else {
             return
         }
@@ -63,6 +71,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     var speedTestTimer: Timer?
     var dataTimer: Timer?
+    var loginTestTimer: Timer?
+    
+    func createLoginTestTimer() {
+        loginTestTimer = Timer.scheduledTimer(
+            timeInterval: 1.0,
+            target: self,
+            selector: #selector(self.pollIntervalLoginTest),
+            userInfo: nil,
+            repeats: true
+        )
+    }
     
     func createSpeedTestTimer() {
         // the timer is the main data collection method...
@@ -91,6 +110,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             userInfo: nil,
             repeats: true
         )
+    }
+    
+    @objc func pollIntervalLoginTest() {
+        let token = DAKeychain.shared["com.nicedishy.token"]
+        ApiManager.shared.dishyToken = token;
+        
+        AppManager.shared.setupStatusBar()
     }
     
     // pollIntervalWithSpeedTest is called on an inteval and should handle collecting and sending data to the api
