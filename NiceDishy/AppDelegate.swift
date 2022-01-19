@@ -14,7 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // look for an auth token in keychain
-        let token = DAKeychain.shared["com.nicedishy.token"]
+        let token = DAKeychain.shared["com.nicedishy.devicetoken"]
         ApiManager.shared.dishyToken = token;
         
         AppManager.shared.setupStatusBar()
@@ -35,7 +35,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
 
+    // callback for when nicedishy:// urls are opened
     func application(_ application: NSApplication, open urls: [URL]) {
+        print("application open nicedishy:// url");
+        
         guard let url = urls.first, let host = url.host, host == "connected" else {
             return
         }
@@ -50,7 +53,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         
-        DAKeychain.shared["com.nicedishy.token"] = value;
+        DAKeychain.shared["com.nicedishy.devicetoken"] = value;
         
         ApiManager.shared.dishyToken = value
         AppManager.shared.setupStatusBar()
@@ -92,7 +95,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             repeats: true
         )
     }
-    
+
     // pollIntervalWithSpeedTest is called on an inteval and should handle collecting and sending data to the api
     // this will be called even if not logged in
     @objc func pollIntervalWithSpeedTest() {
