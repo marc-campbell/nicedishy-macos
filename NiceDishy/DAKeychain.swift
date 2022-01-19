@@ -25,7 +25,7 @@ open class DAKeychain {
         }
     }
     
-    public func delete(withKey key: String) {
+    public func delete(withKey key: String) {   
         let query = keychainQuery(withKey: key)
         let status = SecItemDelete(query)
         logPrint("Delete status: ", status)
