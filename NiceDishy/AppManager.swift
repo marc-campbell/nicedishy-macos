@@ -103,8 +103,4 @@ class AppManager {
     
     var device: Device?
     var isBusy = false
-    
-    @objc func onGetStatus() {
-        dishyService.getData()
-    }
 }
