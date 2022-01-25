@@ -38,7 +38,7 @@ class ApiManager {
             request.httpBody = jsonData
             request.setValue("Token \(token)", forHTTPHeaderField: "Authorization")
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.addValue(userAgent, forHTTPHeaderField: "User-Agent")
+            request.addValue(ApiManager.userAgent, forHTTPHeaderField: "User-Agent")
             
             let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 guard let data = data, error == nil else {
@@ -73,7 +73,7 @@ class ApiManager {
             request.httpBody = jsonData
             request.setValue("Token \(token)", forHTTPHeaderField: "Authorization")
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.addValue(userAgent, forHTTPHeaderField: "User-Agent")
+            request.addValue(ApiManager.userAgent, forHTTPHeaderField: "User-Agent")
             
             let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 guard let data = data, error == nil else {
