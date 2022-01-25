@@ -20,6 +20,8 @@ class ApiManager {
     static let PUSH_DATA_URL = "https://nicedishy-api-marccampbell.cloud.okteto.net/api/v1/stats"
     static let PUSH_SPEED_URL = "https://nicedishy-api-marccampbell.cloud.okteto.net/api/v1/speed"
 
+    static let userAgent = "NiceDishy-Darwin/0.4.0-prerelease"
+    
     var dishyToken: String?
     
     func pushSpeed(payload: [String:Any], completionHandler: @escaping (Bool) -> Void) {
@@ -36,6 +38,7 @@ class ApiManager {
             request.httpBody = jsonData
             request.setValue("Token \(token)", forHTTPHeaderField: "Authorization")
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.addValue(userAgent, forHTTPHeaderField: "User-Agent")
             
             let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 guard let data = data, error == nil else {
@@ -70,6 +73,7 @@ class ApiManager {
             request.httpBody = jsonData
             request.setValue("Token \(token)", forHTTPHeaderField: "Authorization")
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.addValue(userAgent, forHTTPHeaderField: "User-Agent")
             
             let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 guard let data = data, error == nil else {
