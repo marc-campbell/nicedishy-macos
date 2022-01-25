@@ -29,6 +29,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             name: Preference.valueChangedNotification,
             object: nil
         )
+        
+        testFastSpeed()
+    }
+
+    let fastSpeedTest = FastSpeedTest();
+    func testFastSpeed() {
+        print("starting download test")
+        fastSpeedTest.timeout = 15
+        fastSpeedTest.download(completion:{(downloadSpeed:Float64?, error:Error?) in
+            if let dspeed = downloadSpeed {
+                print("Download Speed---------------------\(Int(dspeed/1024/1024)) Mbps")
+            }
+            self.fastSpeedTest.upload(completion:{(uploadSpeed:Float64?, error:Error?) in
+                if let uspeed = uploadSpeed {
+                    print("Upload Speed---------------------\(Int(uspeed/1024/1024)) Mbps")
+                }
+            });
+        });
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {
