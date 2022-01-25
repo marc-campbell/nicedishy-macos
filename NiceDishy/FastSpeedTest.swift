@@ -139,7 +139,7 @@ class FastSpeedTest {
     }
     
     func makeRequests(isDownload: Bool, completion: @escaping (Float64?, Error?) -> Void) {
-        Thread.detachNewThread { [unowned self] in
+        Thread.detachNewThread { [self] in
             // Fetch Token
             if token == nil {
                 if !fetchToken() {
