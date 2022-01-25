@@ -9,335 +9,214 @@ import Foundation
 
 enum FastSpeedErrors: Error {
     case failedToFetchToken
-    case failedToFetchManifests;
-    case notReceived200;
-    case failedToUpload;
-    case failedToGenerateData;
+    case failedToFetchManifests
+    case notReceived200
+    case failedToUpload
+    case failedToGenerateData
 }
 
 
 // FastSpeedTest is using undocumented methods of grabbing a token
 // from fast.com and starting a speed test from it
 class FastSpeedTest {
-    var token: String?;
-    var manifestURLs: [String]?;
-
-    let fastServerCount: Int = 1;
-
-    // control the download tests
-    let downloadSizes: [Int] = [2048, 26214400];
-    let concurrentDownloadLimit: Int = 12;
+    var fastServerCount: Int = 5
+    // cause timeout after 10 sec
+    var timeout: Double = 10
+    var payloadSizes = [2048, 26214400]
     
-    // control the upload tests
-    let uploadSizes:[Int] = [1024, 131072];
+    private var token: String?
+    private var targetURLs = [String]()
+    private var requesters: [Requester] = []
+    private var timestamp: Double = 0
     
     private func fetchToken() -> Bool {
         // get the html
-        let fastURLString = "https://fast.com";
+        let fastURLString = "https://fast.com"
         guard let fastURL = URL(string: fastURLString) else {
-            print("Error: \(fastURLString) doesn't seem to be a valid URL");
-            return false;
+            print("Error: \(fastURLString) doesn't seem to be a valid URL")
+            return false
         }
 
-        var fastHTMLString: String = "";
+        var fastHTMLString: String = ""
         do {
             fastHTMLString = try String(contentsOf: fastURL, encoding: .ascii)
         } catch let error {
             print("Error: \(error)")
-            return false;
+            return false
         }
 
         // find the current js path
-        let matched = matches(for: "<script.*\"(/app-[[:xdigit:]]+\\.js)\"", in: fastHTMLString);
+        let matched = matches(for: "<script.*\"(/app-[[:xdigit:]]+\\.js)\"", in: fastHTMLString)
         // matched[0] = <script src=\"/app-a32983.js\"
         var matchedComponents = matched[0].components(separatedBy: "/")
-        if (matchedComponents.count < 2) {
-            print("unable to find js in script tag");
+        if matchedComponents.count < 2 {
+            print("unable to find js in script tag")
             return false
         }
         
-        matchedComponents[1].removeLast();  // trailing "
-        let fastJSURLString = "https://fast.com/" + matchedComponents[1];
+        matchedComponents[1].removeLast()  // trailing "
+        let fastJSURLString = "https://fast.com/" + matchedComponents[1]
         
         // get the javascript source
         guard let fastJSURL = URL(string: fastJSURLString) else {
-            print("Error: \(fastJSURLString) doesn't seem to be a valid URL");
-            return false;
+            print("Error: \(fastJSURLString) doesn't seem to be a valid URL")
+            return false
         }
 
-        var fastJSString: String = "";
+        var fastJSString: String = ""
         do {
             fastJSString = try String(contentsOf: fastJSURL, encoding: .ascii)
         } catch let error {
             print("Error: \(error)")
-            return false;
+            return false
         }
 
-        let tokenMatched = matches(for: "token:[\"']([[:alpha:]]+)['\"]", in: fastJSString);
-        let tokenMatchedComponents = tokenMatched[0].components(separatedBy: ":");
-        if (tokenMatchedComponents.count < 2) {
-            print("unable to find token in script");
-            return false;
+        let tokenMatched = matches(for: "token:[\"']([[:alpha:]]+)['\"]", in: fastJSString)
+        let tokenMatchedComponents = tokenMatched[0].components(separatedBy: ":")
+        if tokenMatchedComponents.count < 2 {
+            print("unable to find token in script")
+            return false
         }
         
         // the token is in quotes, remove
-        var token = tokenMatchedComponents[1];
+        var token = tokenMatchedComponents[1]
         token.removeFirst()
-        token.removeLast();
+        token.removeLast()
         
-        self.token = token;
+        self.token = token
         
-        return true;
+        return true
     }
-    
-    private func fetchManifests() -> Bool {
-        if (self.token == nil) {
-            return false;
+    private func fetchTargets() {
+        targetURLs.removeAll()
+
+        guard token != nil else {
+            return
         }
         
         // eg: "https://api.fast.com/netflix/speedtest/v2?https=true&token=...&urlCount=5"
-        let fastManufestsURLString = "https://api.fast.com/netflix/speedtest/v2?https=true&token=" + self.token! + "&urlCount=\(fastServerCount)";
-        guard let fastManifestsURL = URL(string: fastManufestsURLString) else {
-            print("Error: \(fastManufestsURLString) doesn't seem to be a valid URL");
-            return false;
+        let fastTargetURLString = "https://api.fast.com/netflix/speedtest/v2?https=true&token=" + self.token! + "&urlCount=\(fastServerCount)"
+        guard let fastTargetURL = URL(string: fastTargetURLString) else {
+            print("Error: \(fastTargetURLString) doesn't seem to be a valid URL")
+            return
         }
 
-        var fastManifestsString: String = "";
+        var fastTargetContent: String = ""
         do {
-            fastManifestsString = try String(contentsOf: fastManifestsURL, encoding: .ascii)
+            fastTargetContent = try String(contentsOf: fastTargetURL, encoding: .ascii)
         } catch let error {
             print("Error: \(error)")
-            return false;
+            return
         }
         
-        let json = try? JSONSerialization.jsonObject(with: fastManifestsString.data(using: .utf16)!, options: []);
-        if (json == nil) {
-            print("error parsing json");
-            return false;
+        let json = try? JSONSerialization.jsonObject(with: fastTargetContent.data(using: .utf16)!, options: [])
+        if json == nil {
+            print("error parsing json")
+            return
         }
         
-        let jsonDictionary = json as? [String: Any];
+        let jsonDictionary = json as? [String: Any]
         let targets = jsonDictionary!["targets"]
         
-        let targetsArray = targets as? [Any];
+        let targetsArray = targets as? [Any]
         
-        var manifestURLs = [String]();
+        var targetURLs = [String]()
         for target in targetsArray! {
-            let targetDictionary = target as? [String: Any];
-            let url = targetDictionary!["url"] as? String;
-            manifestURLs.append(url!);
-            
+            let targetDictionary = target as? [String: Any]
+            let url = targetDictionary!["url"] as? String
+            targetURLs.append(url!)
         }
     
-        self.manifestURLs = manifestURLs;
-        return true;
+        self.targetURLs = targetURLs
     }
     
-    public func download(completion: @escaping (Float64?, Error?) -> Void) {
-        if (self.token == nil) {
-            if (!self.fetchToken()) {
-                completion(nil, FastSpeedErrors.failedToFetchToken);
+    func download(completion: @escaping (Float64?, Error?) -> Void) {
+        makeRequests(isDownload: true, completion: completion)
+    }
+    
+    func upload(completion: @escaping (Float64?, Error?) -> Void) {
+        makeRequests(isDownload: false, completion: completion)
+    }
+    
+    func makeRequests(isDownload: Bool, completion: @escaping (Float64?, Error?) -> Void) {
+        Thread.detachNewThread { [unowned self] in
+            // Fetch Token
+            if token == nil {
+                if !fetchToken() {
+                    completion(nil, FastSpeedErrors.failedToFetchToken);
+                    return
+                }
             }
-        }
-        
-        if (self.manifestURLs == nil) {
-            if (!self.fetchManifests()) {
-                completion(nil, FastSpeedErrors.failedToFetchManifests);
-            }
-        }
-
-        
-        var resultTotalSize: Int = 0;
-        var resultTotalTime: Float64 = 0;
-
-        print("Starting download run(s)")
-        for manifestURLString in self.manifestURLs! {
-            var urlResultsReceived = 0;
-            let urlResultsExpected = downloadSizes.count
             
-            for downloadSize in downloadSizes {
-
-                guard let manifestURL = URL(string: manifestURLString) else {
-                    print("Error: \(manifestURLString) doesn't seem to be a valid URL");
+            // Fetch Targets
+            fetchTargets()
+            if targetURLs.isEmpty {
+                completion(nil, FastSpeedErrors.failedToFetchManifests)
+                return
+            }
+            
+            requesters.removeAll()
+            
+            for urlString in targetURLs {
+                guard let url = URL(string: urlString) else {
+                    print("Error: \(urlString) doesn't seem to be a valid URL");
                     continue;
                 }
-                let chunkURL = manifestURL.appendingPathComponent("/range/0-\(downloadSize)");
                 
-                downloadChunk(url: chunkURL, completion: {(size: Int?, time: Float64?, error: Error?) in
-                    if (error != nil) {
-                        print(error!)
-                        return;
+                let numReq = Int.random(in: 3..<9)
+                
+                for _ in 0..<numReq {
+                    
+                    let size = payloadSizes[Int.random(in: 0..<payloadSizes.count)]
+                    
+                    let chunkURL = url.appendingPathComponent("/range/0-\(size)");
+                    
+                    let req = Requester(
+                        rt: (isDownload ? .download : .upload),
+                        sz: size,
+                        url: chunkURL.absoluteString)
+                    req.start()
+                    requesters.append(req)
+                }
+            }
+            
+            timestamp = Date().timeIntervalSince1970
+            DispatchQueue.main.async {
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                    print("Speed: \(Int(speed)/1024) kbps")
+                    if Date().timeIntervalSince1970 - timestamp > timeout {
+                        timer.invalidate()
+                        cancelRequests()
+                        completion(Float64(speed), nil)
                     }
-                    
-                    resultTotalSize += size!;
-                    resultTotalTime += time!;
-                    
-                    urlResultsReceived += 1;
-                });
-            }
-            while(true) {
-                if (urlResultsReceived >= urlResultsExpected) {
-                    print("received all download results (\(urlResultsReceived) of \(urlResultsExpected) from \(manifestURLString)")
-                    break;
                 }
-                
-                Thread.sleep(forTimeInterval: 1)
             }
         }
-        
-        completion(Float64(resultTotalSize) / resultTotalTime, nil);
     }
     
-    public func downloadChunk(url: URL, completion: @escaping (Int?, Float64?, Error?) -> Void) {
-        let urlString = url.absoluteString;
-        print("making get request to \(urlString)")
-        let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-
-        let destinationUrl = documentsUrl.appendingPathComponent(url.lastPathComponent)
-
-        if FileManager().fileExists(atPath: destinationUrl.path) {
-            do {
-                try FileManager().removeItem(atPath: destinationUrl.path)
-            } catch {
-                print("unable to delete file")
+    private func cancelRequests() {
+        for req in requesters {
+            if !req.isCompleted {
+                req.stop()
             }
         }
-        
-        let now = Date();
-        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: nil)
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        let task = session.dataTask(with: request, completionHandler: {
-            data, response, error in
+    }
+    
+    var speed: Double {
+        get {
+            if requesters.isEmpty {
+                return 0
+            }
             
-            if (error != nil) {
-                completion(0, 0, error);
-                return;
+            var sum: Double = 0
+            for req in requesters {
+                sum += req.averageSpeed
             }
-
-            if let response = response as? HTTPURLResponse {
-                if (response.statusCode != 200) {
-                    completion(0, 0, FastSpeedErrors.notReceived200)
-                    return;
-                }
-                
-                if (data == nil) {
-                    completion(0, 0, FastSpeedErrors.failedToUpload);
-                    return;
-                }
-                
-                if let _ = try? data!.write(to: destinationUrl, options: Data.WritingOptions.atomic) {
-                    let afterDownload = Date();
-                    let delta = afterDownload.timeIntervalSince(now);
-                    
-                    let size = data!.count * 8; // bytes
-                    completion(size , delta, error)
-                } else {
-                    completion(0, 0, error)
-                }
-            }
-        })
-        task.resume()
+            return sum / Double(requesters.count)
+        }
     }
     
-    public func upload(completion: @escaping (Float64?, Error?) -> Void) {
-        if (self.token == nil) {
-            if (!self.fetchToken()) {
-                completion(nil, FastSpeedErrors.failedToFetchToken);
-            }
-        }
-        
-        if (self.manifestURLs == nil) {
-            if (!self.fetchManifests()) {
-                completion(nil, FastSpeedErrors.failedToFetchManifests);
-            }
-        }
-        
-        
-        var resultTotalSize: Int = 0;
-        var resultTotalTime: Float64 = 0;
-
-        print("Starting upload run(s)")
-        for manifestURLString in self.manifestURLs! {
-            var urlResultsReceived = 0;
-            let urlResultsExpected = downloadSizes.count
-            
-            for downloadSize in downloadSizes {
-
-                guard let manifestURL = URL(string: manifestURLString) else {
-                    print("Error: \(manifestURLString) doesn't seem to be a valid URL");
-                    continue;
-                }
-                let chunkURL = manifestURL.appendingPathComponent("/range/0-\(downloadSize)");
-                
-                uploadChunk(url: chunkURL, size: downloadSize, completion: {(time: Float64?, error: Error?) in
-                    if (error != nil) {
-                        print(error!)
-                        return;
-                    }
-                    
-                    resultTotalSize += downloadSize;
-                    resultTotalTime += time!;
-                    
-                    urlResultsReceived += 1;
-                });
-            }
-            while(true) {
-                if (urlResultsReceived >= urlResultsExpected) {
-                    print("received all upload results (\(urlResultsReceived) of \(urlResultsExpected) from \(manifestURLString)")
-                    break;
-                }
-                
-                Thread.sleep(forTimeInterval: 1)
-            }
-        }
-
-        completion(Float64(resultTotalSize) / resultTotalTime, nil);
-    }
-    
-    public func uploadChunk(url: URL, size: Int, completion: @escaping (Float64?, Error?) -> Void) {
-        let urlString = url.absoluteString;
-        print("making post request to \(urlString)")
-        
-        let now = Date();
-        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: nil)
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-
-        var keyData = Data(count: size)
-        let result = keyData.withUnsafeMutableBytes {
-            SecRandomCopyBytes(kSecRandomDefault, size, $0.baseAddress!)
-        }
-        if result == errSecSuccess {
-            request.httpBody = keyData
-        } else {
-            print("Problem generating random bytes")
-            completion(0, FastSpeedErrors.failedToGenerateData)
-        }
-
-        let task = session.dataTask(with: request, completionHandler: {
-            data, response, error in
-            
-            if (error != nil) {
-                completion(0, error);
-                return;
-            }
-
-            if let response = response as? HTTPURLResponse {
-                if (response.statusCode != 200) {
-                    completion(0, FastSpeedErrors.notReceived200)
-                    return;
-                }
-                
-                let afterDownload = Date();
-                let delta = afterDownload.timeIntervalSince(now);
-                completion(delta, error);
-            }
-        })
-        task.resume()
-    }
-    
-    func matches(for regex: String, in text: String) -> [String] {
+    private func matches(for regex: String, in text: String) -> [String] {
         do {
             let regex = try NSRegularExpression(pattern: regex)
             let results = regex.matches(in: text,
@@ -348,6 +227,141 @@ class FastSpeedTest {
         } catch let error {
             print("invalid regex: \(error.localizedDescription)")
             return []
+        }
+    }
+}
+
+class Requester : NSObject, URLSessionDataDelegate {
+    enum ReqType {
+        case download
+        case upload
+    }
+    
+    var reqType: ReqType = .download
+    var reqIndx: Int = 0
+    var reqSize: Double = 0
+    var reqURL: URL?
+    var startTime: Double = 0
+    
+    init(rt: ReqType, sz: Int, url: String) {
+        reqType = rt
+        reqSize = Double(sz)
+        reqURL = URL(string: url)
+    }
+
+    var dataTask: URLSessionDataTask?
+    
+    var isCompleted: Bool {
+        get {
+            guard let task = dataTask else { return false }
+            return task.state == .completed
+        }
+    }
+    
+    static let pieceCount = 20
+    var pieceIndex = 0
+    var pieceSpeed = [Double](repeating: -1, count: pieceCount)
+    
+    var averageSpeed: Double {
+        get {
+            var sum: Double = 0
+            var cnt: Double = 0
+            for ps in pieceSpeed {
+                if ps < 0 {
+                    continue
+                }
+                sum += ps
+                cnt += 1
+            }
+            if cnt > 0 {
+                return sum / cnt
+            }
+            return 0
+        }
+    }
+    
+    func start() {
+        guard reqURL != nil else {
+            return
+        }
+
+        pieceIndex = 0
+        pieceSpeed = [Double](repeating: -1, count: Requester.pieceCount)
+        
+        startTime = Date().timeIntervalSince1970
+        
+        if reqType == .download {
+            download()
+        } else {
+            upload()
+        }
+    }
+    
+    func stop() {
+        if let task = dataTask, task.state != .completed {
+            task.cancel()
+        }
+    }
+    
+    func download() {
+        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
+        var request = URLRequest(url: reqURL!)
+        request.httpMethod = "GET"
+        dataTask = session.dataTask(with: request)
+        dataTask?.resume()
+    }
+    
+    func upload() {
+        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
+        var request = URLRequest(url: reqURL!)
+        request.httpMethod = "POST"
+
+        var keyData = Data(count: Int(reqSize))
+        let result = keyData.withUnsafeMutableBytes {
+            SecRandomCopyBytes(kSecRandomDefault, Int(reqSize), $0.baseAddress!)
+        }
+        if result == errSecSuccess {
+            request.httpBody = keyData
+        } else {
+            print("Problem generating random bytes")
+        }
+
+        dataTask = session.dataTask(with: request)
+        dataTask?.resume()
+    }
+    
+    func addPieceSpeed(_ bytes: Int64) {
+        let curTm = Date().timeIntervalSince1970
+        let delta = curTm - startTime
+        let dSize = Double(bytes)
+        let speed = dSize * 8 / delta
+        
+        pieceSpeed[pieceIndex] = speed
+        pieceIndex = (pieceIndex + 1) % Requester.pieceCount
+        startTime = curTm
+    }
+    
+    //MARK: - URLSessionTaskDelegate
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        if let err = error {
+            print("Connection Error: \(err.localizedDescription)")
+        } else {
+            print("Connection finished")
+        }
+    }
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        if reqType == .download {
+            //print("received bytes: \(dataTask.countOfBytesReceived/1024) kb")
+            //addPieceSpeed(Int64(dataTask.countOfBytesReceived))
+            //print("received bytes: \(data.count/1024) KB")
+            addPieceSpeed(Int64(data.count))
+        }
+    }
+    
+    func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+        if reqType == .upload {
+            //print("sent bytes: \(totalBytesSent/1024) KB")
+            addPieceSpeed(bytesSent)
         }
     }
 }
