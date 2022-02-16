@@ -71,7 +71,7 @@ jobs:
       - name: set the version
         shell: bash --noprofile --norc -eo pipefail {0}
         run: |
-          agvtool new-marketing-version ${{steps.set_version.outputs.no_v}}
+          agvtool new-marketing-version ${{steps.set_version.outputs.no-v}}
 
       - name: build app
         shell: bash --noprofile --norc -eo pipefail {0}
