@@ -424,10 +424,12 @@ PODS:
     - gRPC-ProtoRPC
     - NiceDishy/Messages
   - Protobuf (3.17.0)
+  - raygun4apple (1.5.1)
   - SwiftSoup (2.3.4)
 
 DEPENDENCIES:
   - NiceDishy (from `.`)
+  - raygun4apple
   - SwiftSoup
 
 SPEC REPOS:
@@ -441,6 +443,7 @@ SPEC REPOS:
     - gRPC-ProtoRPC
     - gRPC-RxLibrary
     - Protobuf
+    - raygun4apple
     - SwiftSoup
 
 EXTERNAL SOURCES:
@@ -458,8 +461,9 @@ SPEC CHECKSUMS:
   gRPC-RxLibrary: f86e60fd8f65f0d57c0de1421c1b518dfd3d9e2b
   NiceDishy: f35d8a8f1a86cf461640508cd314bb841d28048b
   Protobuf: 7327d4444215b5f18e560a97f879ff5503c4581c
+  raygun4apple: 300b0669afaaddee0d86d26976508f0ff3f2181b
   SwiftSoup: d5b9645498f8d09fdc5f96b9c70b5858099fd411
 
-PODFILE CHECKSUM: 3e091ce7e18972d7eefce3e58dd18b4d48f4f3e9
+PODFILE CHECKSUM: 9bb368afdd2310a8a32810abda300ca917d06e90
 
 COCOAPODS: 1.11.2
