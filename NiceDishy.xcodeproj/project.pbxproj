@@ -392,6 +392,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 0.1;
 				DEVELOPMENT_TEAM = SVB2S5YXF4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = NiceDishy/Info.plist;
@@ -404,6 +405,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "NiceDishy/NiceDishy-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
@@ -418,6 +420,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 0.1;
 				DEVELOPMENT_TEAM = SVB2S5YXF4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = NiceDishy/Info.plist;
@@ -430,6 +433,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "NiceDishy/NiceDishy-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};

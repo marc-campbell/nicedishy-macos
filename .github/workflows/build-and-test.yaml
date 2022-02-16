@@ -16,13 +16,13 @@ jobs:
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
-            
+
       - name: setup-cocoapods
         uses: maxim-lobanov/setup-cocoapods@v1
         with:
           podfile-path: ./Podfile.lock
 
-      - name: install pods  
+      - name: install pods
         run: |
           pod install
 
@@ -54,7 +54,25 @@ jobs:
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-          
+
+      - name: prepare the version numbers
+        uses: actions/github-script@v4
+        id: set_version
+        with:
+          script: |
+            const tag = context.ref.substring(10)
+            const no_v = tag.replace('v', '')
+            const dash_index = no_v.lastIndexOf('-')
+            const no_dash = (dash_index > -1) ?  no_v.substring(0, dash_index) : no_v
+            core.setOutput('tag', tag)
+            core.setOutput('no-v', no_v)
+            core.setOutput('no-dash', no_dash)
+
+      - name: set the version
+        shell: bash --noprofile --norc -eo pipefail {0}
+        run: |
+          agvtool new-marketing-version ${{steps.set_version.outputs.no_v}}
+
       - name: build app
         shell: bash --noprofile --norc -eo pipefail {0}
         run: |
@@ -103,4 +121,4 @@ jobs:
         if: ${{ always() }}
         run: |
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision          
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
