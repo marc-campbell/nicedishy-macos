@@ -6,6 +6,7 @@
 //
 
 import Cocoa
+import Sentry
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -13,6 +14,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet var window: NSWindow!
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        
+        SentrySDK.start { options in
+            options.dsn = "https://486195828d83439c9f7710e68a00d106@o242537.ingest.sentry.io/6209419"
+            options.debug = true // Enabled debug when first installing is always helpful
+
+            // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+            // We recommend adjusting this value in production.
+            options.tracesSampleRate = 1.0
+        }
+        
         // look for an auth token in keychain
         let token = DAKeychain.shared["com.nicedishy.devicetoken"]
         ApiManager.shared.dishyToken = token;
