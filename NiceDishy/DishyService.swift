@@ -66,6 +66,8 @@ class DishyService {
     }
     
     public func getDishyStatus(completion: @escaping ([String:Any], Error?) -> Void) {
+        let noResponse : [String:Any] = [String:Any]()
+
         DispatchQueue.global(qos: .userInitiated).async {
             if self.isBusy {
                 print("Busy. Try later!")
@@ -85,6 +87,7 @@ class DishyService {
                 
                 if error != nil {
                     print(error!)
+                    completion(noResponse, error);
                     return
                 }
                             
