@@ -149,7 +149,10 @@ class FastSpeedTest {
             }
             
             // Fetch Targets
-            fetchTargets()
+            if targetURLs.isEmpty {
+                fetchTargets()
+            }
+
             if targetURLs.isEmpty {
                 completion(nil, FastSpeedErrors.failedToFetchManifests)
                 return
