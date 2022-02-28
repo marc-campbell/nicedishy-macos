@@ -87,8 +87,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         ApiManager.shared.dishyToken = value
         AppManager.shared.setupStatusBar()
         
-        AppManager.shared.dishyService.getAndSendData()
-        AppManager.shared.dishyService.getAndSendSpeed()
+        DishyService.getAndSendData()
+        DishyService.getAndSendSpeed()
     }
     
     // MARK: - Timer & Notification
@@ -101,8 +101,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // if we are logged in, send data immediately
         if (ApiManager.shared.dishyToken != nil) {
-            AppManager.shared.dishyService.getAndSendData()
-            AppManager.shared.dishyService.getAndSendSpeed()
+            DishyService.getAndSendData()
+            DishyService.getAndSendSpeed()
         }
 
         speedTestTimer = Timer.scheduledTimer(
@@ -135,7 +135,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         print("getting and sending speed")
-        AppManager.shared.dishyService.getAndSendSpeed()
+        DishyService.getAndSendSpeed()
     }
     
     // pollIntervalWithoutSpeedTest is called on an inteval and should handle collecting and sending data to the api
@@ -148,7 +148,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         print("getting and sending data")
-        AppManager.shared.dishyService.getAndSendData()
+        DishyService.getAndSendData()
     }
 
     @objc func preferenceChanged(_ n: Notification) {

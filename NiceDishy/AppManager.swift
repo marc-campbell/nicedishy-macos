@@ -11,7 +11,6 @@ class AppManager {
     static let shared = AppManager()
     
     let appStatusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-    let dishyService = DishyService()
     
     let preferenceWinController = PreferenceWndController(windowNibName: "PreferenceWndController")
     

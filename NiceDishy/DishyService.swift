@@ -8,24 +8,28 @@
 import Foundation
 
 class DishyService {
-    var device: Device?
-    var isBusy = false
+    static let shared = DishyService()
     
-    public func getAndSendSpeed() {
-        getDishyStatus(completion:{(statusPayload:[String:Any]?, error:Error?) in
-            if (error != nil) {
-                print("error retreiving dishy status", error!)
-                return
-            }
-            
-            DispatchQueue.global(qos: .userInitiated).async {
+    private var device = Device.service(withHost: "192.168.100.1:9200", callOptions: nil)
+    private var isBusy = false
+    private var locker = NSLock()
+    private var completionHandlers = [([String: Any]?, Error?) -> Void]()
+    
+    public static func getAndSendSpeed() {
+        // call on a new thread to avoid a deadlock
+        Thread.detachNewThread {
+            shared.getDishyStatus(completion:{(statusPayload:[String:Any]?, error:Error?) in
+                if (error != nil) {
+                    print("error retreiving dishy status", error!)
+                    return
+                }
+                
                 let now = Date();
 
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
                 formatter.timeZone = TimeZone(abbreviation: "UTC")
 
-                
                 var payload : [String:Any] = [String:Any]()
                 payload["when"] = formatter.string(from:now)
                 
@@ -57,87 +61,101 @@ class DishyService {
                         
                         print("sending speed data")
                         ApiManager.shared.pushSpeed(payload: payload) { pushResult in
-                            print("push complete")
+                            print("push speed complete")
                         }
                     });
                 });
-            }
-        });
-    }
-    
-    public func getDishyStatus(completion: @escaping ([String:Any], Error?) -> Void) {
-        let noResponse : [String:Any] = [String:Any]()
-
-        DispatchQueue.global(qos: .userInitiated).async {
-            if self.isBusy {
-                print("Busy. Try later!")
-            }
-            self.isBusy = true
-            
-            let options = GRPCMutableCallOptions()
-            options.transport = GRPCDefaultTransportImplList.core_insecure
-            self.device = Device.service(withHost: "192.168.100.1:9200", callOptions: options)
-            
-            let now = Date();
-
-            let request = Request()
-            request.getStatus = GetStatusRequest()
-            let handler = GRPCUnaryResponseHandler<Response>(responseHandler: { [unowned self] (response, error: Error?) in
-                isBusy = false
-                
-                if error != nil {
-                    print(error!)
-                    completion(noResponse, error);
-                    return
-                }
-                            
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-                formatter.timeZone = TimeZone(abbreviation: "UTC")
-                    
-                var deviceInfo : [String:Any] = [String:Any]()
-                deviceInfo["hardwareVersion"] = response.dishGetStatus.deviceInfo.hardwareVersion!
-                deviceInfo["softwareVersion"] = response.dishGetStatus.deviceInfo.softwareVersion!
-                
-                var deviceState : [String:Any] = [String:Any]()
-                deviceState["uptimeSeconds"] = response.dishGetStatus.deviceState.uptimeS
-                
-                var status : [String:Any] = [String:Any]()
-
-                status["deviceInfo"] = deviceInfo
-                status["deviceState"] = deviceState
-                
-                status["snr"] = 0; // TODO
-                status["downlinkThroughputBps"] = response.dishGetStatus.downlinkThroughputBps
-                status["uplinkThroughputBps"] = response.dishGetStatus.uplinkThroughputBps
-                status["popPingLatencyMs"] = response.dishGetStatus.popPingLatencyMs
-                status["popPingDropRate"] = response.dishGetStatus.popPingDropRate
-                status["percentObstructed"] = 0 // TODO
-                status["secondsObstructed"] = 0;  // TODO
-                            
-                var payload : [String:Any] = [String:Any]()
-                payload["when"] = formatter.string(from:now)
-                payload["status"] = status
-                
-                
-                completion(payload, nil);
-            }, responseDispatchQueue: nil)
-            self.device?.handle(withMessage: request, responseHandler: handler!, callOptions: nil).start()
+            });
         }
     }
     
-    public func getAndSendData() {
+    public static func getAndSendData() {
+        // call on a new thread to avoid a deadlock
+        Thread.detachNewThread {
+            shared.getDishyStatus(completion:{(payload:[String:Any]?, error:Error?) in
+                if (error != nil) {
+                    print("error retreiving dishy status", error!)
+                    return
+                }
+                
+                ApiManager.shared.pushData(payload: payload!) { pushResult in
+                    print("push data complete")
+                }
+            });
+        }
+    }
+    
+    public func getDishyStatus(completion: @escaping ([String:Any]?, Error?) -> Void) {
+        // register completion handler
+        locker.lock()
+        completionHandlers.append(completion)
+        locker.unlock()
         
-        getDishyStatus(completion:{(payload:[String:Any]?, error:Error?) in
-            if (error != nil) {
-                print("error retreiving dishy status", error!)
+        if isBusy {
+            return
+        }
+        
+        isBusy = true
+        
+        // status request
+        let request = Request()
+        request.getStatus = GetStatusRequest()
+
+        // call option
+        let options = GRPCMutableCallOptions()
+        options.transport = GRPCDefaultTransportImplList.core_insecure
+        
+        // call service
+        if let handler = GRPCUnaryResponseHandler<Response>(responseHandler: { [unowned self] (response, error: Error?) in
+            if error != nil {
+                print(error!)
+                onCompleted(payload: nil, error: error)
                 return
             }
+
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+            formatter.timeZone = TimeZone(abbreviation: "UTC")
+
+            var deviceInfo : [String:Any] = [String:Any]()
+            deviceInfo["hardwareVersion"] = response.dishGetStatus.deviceInfo.hardwareVersion!
+            deviceInfo["softwareVersion"] = response.dishGetStatus.deviceInfo.softwareVersion!
+
+            var deviceState : [String:Any] = [String:Any]()
+            deviceState["uptimeSeconds"] = response.dishGetStatus.deviceState.uptimeS
+
+            var status : [String:Any] = [String:Any]()
+
+            status["deviceInfo"] = deviceInfo
+            status["deviceState"] = deviceState
+
+            status["snr"] = 0; // TODO
+            status["downlinkThroughputBps"] = response.dishGetStatus.downlinkThroughputBps
+            status["uplinkThroughputBps"] = response.dishGetStatus.uplinkThroughputBps
+            status["popPingLatencyMs"] = response.dishGetStatus.popPingLatencyMs
+            status["popPingDropRate"] = response.dishGetStatus.popPingDropRate
+            status["percentObstructed"] = 0 // TODO
+            status["secondsObstructed"] = 0;  // TODO
+
+            var payload : [String:Any] = [String:Any]()
+            payload["when"] = formatter.string(from: Date())
+            payload["status"] = status
+
+            onCompleted(payload: payload, error: nil)
             
-            ApiManager.shared.pushData(payload: payload!) { pushResult in
-                print("push complete")
-            }
-        });
+            isBusy = false
+        }, responseDispatchQueue: DispatchQueue.main) {
+            device.handle(withMessage: request, responseHandler: handler, callOptions: options)
+        }
+    }
+    
+    func onCompleted(payload: [String: Any]?, error: Error?) {
+        locker.lock()
+        for c in completionHandlers {
+            c(payload, error)
+        }
+        completionHandlers.removeAll()
+        locker.unlock()
     }
 }
 
