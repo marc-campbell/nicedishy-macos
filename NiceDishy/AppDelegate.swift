@@ -14,7 +14,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet var window: NSWindow!
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        
         SentrySDK.start { options in
             options.dsn = "https://486195828d83439c9f7710e68a00d106@o242537.ingest.sentry.io/6209419"
             options.debug = true // Enabled debug when first installing is always helpful
@@ -40,11 +39,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             name: Preference.valueChangedNotification,
             object: nil
         )
-        
-        testFastSpeed()
     }
 
     let fastSpeedTest = FastSpeedTest();
+    
     func testFastSpeed() {
         print("starting download test")
         fastSpeedTest.timeout = 15

@@ -145,7 +145,8 @@ class DishyService {
             
             isBusy = false
         }, responseDispatchQueue: DispatchQueue.main) {
-            device.handle(withMessage: request, responseHandler: handler, callOptions: options)
+            let req = device.handle(withMessage: request, responseHandler: handler, callOptions: options)
+            req.start()
         }
     }
     
