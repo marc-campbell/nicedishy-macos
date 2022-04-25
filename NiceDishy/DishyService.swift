@@ -17,7 +17,7 @@ class DishyService {
     
     public static func getAndSendSpeed() {
         // call on a new thread to avoid a deadlock
-        Thread.detachNewThread {
+        DispatchQueue.global(qos: .userInitiated).async {
             shared.getDishyStatus(completion:{(statusPayload:[String:Any]?, error:Error?) in
                 if (error != nil) {
                     print("error retreiving dishy status", error!)
@@ -71,13 +71,13 @@ class DishyService {
     
     public static func getAndSendData() {
         // call on a new thread to avoid a deadlock
-        Thread.detachNewThread {
+        DispatchQueue.global(qos: .userInitiated).async {
             shared.getDishyStatus(completion:{(payload:[String:Any]?, error:Error?) in
                 if (error != nil) {
                     print("error retreiving dishy status", error!)
                     return
                 }
-                
+
                 ApiManager.shared.pushData(payload: payload!) { pushResult in
                     print("push data complete")
                 }

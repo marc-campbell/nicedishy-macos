@@ -113,7 +113,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func createDataTimer() {
-        // let intervalWithoutSpeedTest = 60.0  // minute
         dataTimer = Timer.scheduledTimer(
             timeInterval: Double(Preference.dataInterval),
             target: self,
@@ -131,7 +130,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("not logged in")
             return
         }
-        
+
         print("getting and sending speed")
         DishyService.getAndSendSpeed()
     }
