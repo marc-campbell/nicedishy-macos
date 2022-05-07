@@ -182,7 +182,7 @@ class FastSpeedTest {
             
             timestamp = Date().timeIntervalSince1970
             DispatchQueue.main.async {
-                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
                     print("Speed: \(Int(speed)/1024) kbps")
                     if Date().timeIntervalSince1970 - timestamp > timeout {
                         timer.invalidate()
@@ -199,6 +199,7 @@ class FastSpeedTest {
             if !req.isCompleted {
                 req.stop()
             }
+            req.finish()
         }
     }
     
@@ -247,9 +248,13 @@ class Requester : NSObject, URLSessionDataDelegate {
         reqType = rt
         reqSize = Double(sz)
         reqURL = URL(string: url)
+        
+        super.init()
+        session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
     }
 
     var dataTask: URLSessionDataTask?
+    var session: URLSession?
     
     var isCompleted: Bool {
         get {
@@ -303,30 +308,33 @@ class Requester : NSObject, URLSessionDataDelegate {
         }
     }
     
+    func finish() {
+        session?.finishTasksAndInvalidate()
+    }
+    
     func download() {
-        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
         var request = URLRequest(url: reqURL!)
         request.httpMethod = "GET"
-        dataTask = session.dataTask(with: request)
+        dataTask = session?.dataTask(with: request)
         dataTask?.resume()
     }
     
     func upload() {
-        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
         var request = URLRequest(url: reqURL!)
         request.httpMethod = "POST"
 
-        var keyData = Data(count: Int(reqSize))
-        let result = keyData.withUnsafeMutableBytes {
-            SecRandomCopyBytes(kSecRandomDefault, Int(reqSize), $0.baseAddress!)
-        }
-        if result == errSecSuccess {
-            request.httpBody = keyData
-        } else {
-            print("Problem generating random bytes")
-        }
-
-        dataTask = session.dataTask(with: request)
+        let keyData = Data(count: Int(reqSize))
+//        let result = keyData.withUnsafeMutableBytes {
+//            SecRandomCopyBytes(kSecRandomDefault, Int(reqSize), $0.baseAddress!)
+//        }
+//        if result == errSecSuccess {
+//            request.httpBody = keyData
+//        } else {
+//            print("Problem generating random bytes")
+//        }
+        request.httpBody = keyData
+        
+        dataTask = session?.dataTask(with: request)
         dataTask?.resume()
     }
     

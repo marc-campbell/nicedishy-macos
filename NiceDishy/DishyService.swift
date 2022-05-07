@@ -17,7 +17,7 @@ class DishyService {
     
     public static func getAndSendSpeed() {
         // call on a new thread to avoid a deadlock
-        DispatchQueue.global(qos: .userInitiated).async {
+        Thread.detachNewThread {
             shared.getDishyStatus(completion:{(statusPayload:[String:Any]?, error:Error?) in
                 if (error != nil) {
                     print("error retreiving dishy status", error!)
@@ -49,8 +49,9 @@ class DishyService {
                     } else {
                         speed["download"] = downloadSpeed!;
                     }
+                    let fastSpeedTestForUpload = FastSpeedTest()
                     print("starting upload test")
-                    fastSpeedTest.upload(completion:{(uploadSpeed:Float64?, error:Error?) in
+                    fastSpeedTestForUpload.upload(completion:{(uploadSpeed:Float64?, error:Error?) in
                         if (error != nil) {
                             print("error retreiving upload speed", error!);
                         } else {
@@ -71,7 +72,7 @@ class DishyService {
     
     public static func getAndSendData() {
         // call on a new thread to avoid a deadlock
-        DispatchQueue.global(qos: .userInitiated).async {
+        Thread.detachNewThread {
             shared.getDishyStatus(completion:{(payload:[String:Any]?, error:Error?) in
                 if (error != nil) {
                     print("error retreiving dishy status", error!)
