@@ -20,7 +20,7 @@ class ApiManager {
 //    static let PUSH_DATA_URL = "https://nicedishy-api-marccampbell.cloud.okteto.net/api/v1/stats"
 //    static let PUSH_SPEED_URL = "https://nicedishy-api-marccampbell.cloud.okteto.net/api/v1/speed"
 
-    static let userAgent = "NiceDishy-Darwin/0.4.6-prerelease"
+    static let userAgent = "NiceDishy-Darwin/0.4.9"
     
     var dishyToken: String?
     

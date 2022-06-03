@@ -108,6 +108,8 @@ class DishyService {
         
         // call service
         if let handler = GRPCUnaryResponseHandler<Response>(responseHandler: { [unowned self] (response, error: Error?) in
+            isBusy = false
+
             if error != nil {
                 print(error!)
                 onCompleted(payload: nil, error: error)
@@ -144,7 +146,6 @@ class DishyService {
 
             onCompleted(payload: payload, error: nil)
             
-            isBusy = false
         }, responseDispatchQueue: DispatchQueue.main) {
             let req = device.handle(withMessage: request, responseHandler: handler, callOptions: options)
             req.start()
